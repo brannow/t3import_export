@@ -1,9 +1,12 @@
-<f:layout name="Backend" />
-
-<f:section name="content">
-	<h1>Export complete</h1>
-	<f:flashMessages />
-	<div class="message">
-		<p><f:count>{result}</f:count> records exported for task {task}</p>
-	</div>
-</f:section>
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:sv="http://typo3.org/ns/Cobweb/Svconnector/ViewHelpers">
+<f:flashMessages/>
+<h1>Export complete</h1>
+<div class="message">
+    <p>
+        <f:count>{result}</f:count>
+        records exported for task {task}
+    </p>
+</div>
+</html>
