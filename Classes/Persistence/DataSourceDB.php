@@ -2,6 +2,7 @@
 
 namespace CPSIT\T3importExport\Persistence;
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\Exception\ContentRenderingException;
 use CPSIT\T3importExport\ConfigurableInterface;
 use CPSIT\T3importExport\ConfigurableTrait;
@@ -86,12 +87,18 @@ class DataSourceDB implements DataSourceInterface, ConfigurableInterface, Identi
         $queryConfiguration = $this->renderValues($configuration);
 
         try {
-            $query = (new SelectQuery())
-                ->withConfiguration($queryConfiguration)
+            /** @var SelectQuery $query */
+            $query = GeneralUtility::makeInstance(SelectQuery::class);
+            if($this->identifier) {
+                $query = $query->withDatabaseIdentifier($this->identifier);
+            }
+
+            /** @var \Doctrine\DBAL\Query\QueryBuilder $queryBuilder */
+            $queryBuilder = $query->withConfiguration($queryConfiguration)
                 ->setQuery()
                 ->build();
 
-            $records = $query->execute()->fetchAllAssociative();
+            $records = $queryBuilder->executeQuery()->fetchAllAssociative();
         } catch (Exception) {
             // todo: log error
         }

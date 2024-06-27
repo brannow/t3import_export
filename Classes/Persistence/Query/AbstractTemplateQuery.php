@@ -55,7 +55,7 @@ abstract class AbstractTemplateQuery implements QueryInterface
 
     public const MESSAGE_MISSING_FIELD = 'Field `%s` must not be empty';
     public const CODE_MISSING_FIELD = 1_642_072_670;
-
+    public const DEFAULT_DATABASE_IDENTIFIER = 'Default';
 
 
     public const DEFAULT_CONFIGURATION = [
@@ -72,10 +72,19 @@ abstract class AbstractTemplateQuery implements QueryInterface
      */
     protected array $config = [];
 
+
+    protected $databaseIdentifier = self::DEFAULT_DATABASE_IDENTIFIER;
+
     /**
      * @var QueryBuilder
      */
     protected QueryBuilder $queryBuilder;
+
+    public function withDatabaseIdentifier(string $identifier): self
+    {
+        $this->databaseIdentifier = $identifier;
+        return clone $this;
+    }
 
     /**
      * @param array $config
@@ -109,9 +118,15 @@ abstract class AbstractTemplateQuery implements QueryInterface
 
     final protected function setQueryBuilder(): void
     {
-        $this->queryBuilder = $this->connectionPool->getConnectionForTable(
-            $this->config[QueryInterface::TABLE]
-        )->createQueryBuilder();
+        if(self::DEFAULT_DATABASE_IDENTIFIER !== $this->databaseIdentifier) {
+            $connection = $this->connectionService->getDatabase($this->databaseIdentifier);
+            $this->queryBuilder = $connection->createQueryBuilder();
+
+        } else {
+            $this->queryBuilder = $this->connectionPool->getConnectionForTable(
+                $this->config[QueryInterface::TABLE]
+            )->createQueryBuilder();
+        }
     }
 
     final public function setQuery(): QueryInterface
