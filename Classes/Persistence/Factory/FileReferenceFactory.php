@@ -30,11 +30,9 @@ use TYPO3\CMS\Extbase\Domain\Model\FileReference;
  */
 class FileReferenceFactory
 {
-    protected ResourceFactory $resourceFactory;
 
-    public function __construct(ResourceFactory $resourceFactory = null)
+    public function __construct(protected ResourceFactory $resourceFactory)
     {
-        $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
     }
     /**
      * Creates a new file reference for a file

@@ -37,17 +37,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 trait DatabaseTrait
 {
-    /**
-     * Database connection service
-     *
-     * @var DatabaseConnectionService
-     */
-    protected DatabaseConnectionService $connectionService;
-
-    /**
-     * @var ConnectionPool|mixed|object|LoggerAwareInterface|SingletonInterface
-     */
-    protected ConnectionPool $connectionPool;
 
     /**
      * Database
@@ -62,10 +51,8 @@ trait DatabaseTrait
      * @param ConnectionPool|null $connectionPool
      * @param DatabaseConnectionService|null $connectionService
      */
-    public function __construct(ConnectionPool $connectionPool = null, DatabaseConnectionService $connectionService = null)
+    public function __construct(protected ConnectionPool $connectionPool, protected DatabaseConnectionService $connectionService)
     {
-        $this->connectionPool = $connectionPool ?? GeneralUtility::makeInstance(ConnectionPool::class);
-        $this->connectionService = $connectionService ?? GeneralUtility::makeInstance(DatabaseConnectionService::class);
         if (!$this->database instanceof Connection) {
             $this->database = $GLOBALS['TYPO3_DB'];
         }

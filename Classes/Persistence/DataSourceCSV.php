@@ -33,15 +33,12 @@ class DataSourceCSV implements DataSourceInterface, ConfigurableInterface
 
     protected static $characterProperties = ['delimiter', 'enclosure', 'escape'];
 
-    protected ConfigurationValidatorInterface $configurationValidator;
-
     /**
      * DataSourceCSV constructor.
      * @param ConfigurationValidatorInterface|null $configurationValidator
      */
-    public function __construct(ConfigurationValidatorInterface $configurationValidator = null)
+    public function __construct(protected ConfigurationValidatorInterface $configurationValidator)
     {
-        $this->configurationValidator = $configurationValidator ?? GeneralUtility::makeInstance(ResourcePathConfigurationValidator::class);
     }
 
 

@@ -37,17 +37,8 @@ class DataTargetFactory extends AbstractFactory implements FactoryInterface
 {
     final public const DEFAULT_DATA_TARGET_CLASS = DataTargetRepository::class;
 
-    protected PersistenceManagerInterface $persistenceManager;
+    public function __construct(protected PersistenceManagerInterface $persistenceManager) {
 
-    public function __construct(PersistenceManagerInterface $persistenceManager = null) {
-
-        if ($persistenceManager === null) {
-            $persistenceManager = (GeneralUtility::makeInstance(ObjectManager::class))
-                ->get(PersistenceManagerInterface::class);
-        }
-        if (null !== $persistenceManager) {
-            $this->persistenceManager = $persistenceManager;
-        }
     }
     /**
      * Builds a factory object
@@ -91,12 +82,7 @@ class DataTargetFactory extends AbstractFactory implements FactoryInterface
             }
         }
         /** @var DataTargetInterface $target */
-        $target = GeneralUtility::makeInstance(
-            $dataTargetClass,
-            $objectClass,
-            null,
-            $this->persistenceManager
-        );
+        $target = GeneralUtility::makeInstance($dataTargetClass);
         if ($target instanceof IdentifiableInterface && isset($settings['identifier'])) {
             $target->setIdentifier($settings['identifier']);
         }

@@ -11,3 +11,22 @@ services:
               priority: 2
               target: object
               sources: array,string,int
+    CPSIT\T3importExport\Persistence\Factory\DataTargetFactory:
+      public: true
+    CPSIT\T3importExport\Persistence\Factory\FileReferenceFactory:
+      public: true
+    CPSIT\T3importExport\Persistence\DataSourceDB:
+      public: true
+    CPSIT\T3importExport\Persistence\DataSourceCSV:
+      arguments:
+        $configurationValidator: '@CPSIT\T3importExport\Validation\Configuration\ResourcePathConfigurationValidator'
+    CPSIT\T3importExport\Persistence\DataSourceQueue:
+      public: true
+    CPSIT\T3importExport\Persistence\DataTargetQueue:
+      public: true
+    CPSIT\T3importExport\Persistence\DataTargetDB:
+      public: true
+    CPSIT\T3importExport\Persistence\Query\SelectJoinQuery:
+      public: true
+    CPSIT\T3importExport\Persistence\Query\SelectQuery:
+      public: true

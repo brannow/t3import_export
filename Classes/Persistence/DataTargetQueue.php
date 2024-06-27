@@ -39,11 +39,9 @@ class DataTargetQueue implements DataTargetInterface, ConfigurableInterface
     final public const KEY_IDENTIFIER = 'identifier';
     final public const KEY_ALLOW_UPDATE = 'allowUpdate';
     protected string $targetClass = QueueItem::class;
-    protected QueueItemRepository $repository;
 
-    public function __construct(QueueItemRepository $repository = null)
+    public function __construct(protected QueueItemRepository $repository)
     {
-        $this->repository = $repository ?? (GeneralUtility::makeInstance(QueueItemRepository::class));
     }
 
     public function isConfigurationValid(array $configuration): bool

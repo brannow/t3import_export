@@ -39,11 +39,9 @@ class DataSourceQueue implements DataSourceInterface, ConfigurableInterface
     final public const DEFAULT_BATCH_SIZE = 10;
     protected string $targetClass = QueueItem::class;
 
-    protected QueueItemRepository $repository;
 
-    public function __construct(QueueItemRepository $repository = null)
+    public function __construct(protected QueueItemRepository $repository)
     {
-        $this->repository = $repository ?? (GeneralUtility::makeInstance(QueueItemRepository::class));
     }
 
     public function isConfigurationValid(array $configuration): bool
