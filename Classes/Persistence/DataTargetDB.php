@@ -2,6 +2,7 @@
 
 namespace CPSIT\T3importExport\Persistence;
 
+use CPSIT\T3importExport\Component\AbstractComponent;
 use CPSIT\T3importExport\ConfigurableInterface;
 use CPSIT\T3importExport\ConfigurableTrait;
 use CPSIT\T3importExport\DatabaseTrait;
@@ -33,7 +34,8 @@ use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
  *
  * @package CPSIT\T3importExport\Persistence
  */
-class DataTargetDB implements DataTargetInterface, ConfigurableInterface
+class DataTargetDB extends AbstractComponent
+    implements DataTargetInterface, ConfigurableInterface
 {
     use ConfigurableTrait, DatabaseTrait;
 
@@ -118,6 +120,10 @@ class DataTargetDB implements DataTargetInterface, ConfigurableInterface
         }
         $tableName = $configuration[self::FIELD_TABLE];
 
+        /**
+         * @todo We should respect the 'identifier' for additional (external) databases here
+         * (without table mapping by core connection service)
+         */
         $this->connection = $this->connectionPool->getConnectionForTable($tableName);
         if (!$this->connection instanceof Connection) {
 
@@ -153,6 +159,8 @@ class DataTargetDB implements DataTargetInterface, ConfigurableInterface
                 $message = 'Update Exception:' . PHP_EOL;
                 $message .= 'Data:' . PHP_EOL;
                 $message .= json_encode($object, JSON_THROW_ON_ERROR);
+                $message .= $exception->getMessage()  . PHP_EOL;
+
                 /**
                  * Fixme: write to log instead of catch and re-throw
                  */
@@ -175,7 +183,8 @@ class DataTargetDB implements DataTargetInterface, ConfigurableInterface
         } catch (\Exception $exception) {
             $message = 'Insert Exception:' . PHP_EOL;
             $message .= 'Data:' . PHP_EOL;
-            $message .= json_encode($object, JSON_THROW_ON_ERROR);
+            $message .= json_encode($object, JSON_THROW_ON_ERROR) . PHP_EOL;
+            $message .= $exception->getMessage()  . PHP_EOL;
 
             throw new PersistenceException(
                 $message,
