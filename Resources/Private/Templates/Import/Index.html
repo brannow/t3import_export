@@ -16,9 +16,12 @@
         <div class="typo3-message message-information">
             <div class="message-body">{f:translate(key: 'message.chooseImportTask')}</div>
         </div>
-        <f:for each="{tasks}" as="task">
-            <f:render partial="Task/ImportListItem" arguments="{task: task}"/>
-        </f:for>
+        <ul>
+            <f:for each="{tasks}" as="task">
+                <f:render partial="Task/ImportListItem" arguments="{task: task}"/>
+            </f:for>
+        </ul>
+
     </f:then>
     <f:else>
         <div class="typo3-message message-notice">
@@ -33,9 +36,11 @@
         <div class="typo3-message message-information">
             <div class="message-body">{f:translate(key: 'message.chooseImportSet')}</div>
         </div>
-        <f:for each="{sets}" as="set">
-            <f:render partial="Set/ListItem" arguments="{set: set}"/>
-        </f:for>
+        <ul>
+            <f:for each="{sets}" as="set">
+                <f:render partial="Set/ListItem" arguments="{set: set}"/>
+            </f:for>
+        </ul>
     </f:then>
     <f:else>
         <div class="typo3-message message-notice">
