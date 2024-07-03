@@ -5,6 +5,9 @@ services:
         public: false
     CPSIT\T3importExport\:
         resource: '../Classes/*'
+        exclude: '../Classes/Persistence/Query/*'
+    CPSIT\T3importExport\Domain\Factory\TransferTaskFactory:
+      public: true
     CPSIT\T3importExport\Property\TypeConverter\PersistentObjectConverter:
         tags:
             - name: extbase.type_converter
@@ -16,6 +19,12 @@ services:
     CPSIT\T3importExport\Persistence\Factory\FileReferenceFactory:
       public: true
     CPSIT\T3importExport\Component\Initializer\TruncateTables:
+      public: true
+    CPSIT\T3importExport\Component\PreProcessor\LookUpDB:
+      public: true
+    CPSIT\T3importExport\Component\PreProcessor\RenderContent:
+      public: true
+    CPSIT\T3importExport\Component\PostProcessor\TranslateObject:
       public: true
     CPSIT\T3importExport\Component\PostProcessor\SetL10nParent:
       public: true
@@ -33,4 +42,8 @@ services:
     CPSIT\T3importExport\Persistence\Query\SelectJoinQuery:
       public: true
     CPSIT\T3importExport\Persistence\Query\SelectQuery:
+      public: true
+    CPSIT\T3importExport\Service\TranslationService:
+      public: true
+    CPSIT\T3importExport\Validation\Configuration\TranslateObjectConfigurationValidator:
       public: true

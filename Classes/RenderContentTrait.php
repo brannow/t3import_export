@@ -26,16 +26,6 @@ use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 trait RenderContentTrait
 {
     /**
-     * @var ContentObjectRenderer
-     */
-    protected $contentObjectRenderer;
-
-    /**
-     * @var TypoScriptService
-     */
-    protected $typoScriptService;
-
-    /**
      * Get a ContentObjectRenderer
      */
     public function getContentObjectRenderer(): ContentObjectRenderer

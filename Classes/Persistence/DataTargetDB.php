@@ -144,7 +144,7 @@ class DataTargetDB extends AbstractComponent
         }
 
 
-        if (isset($object[self::DEFAULT_IDENTITY_FIELD])) {
+        if (!empty($object[self::DEFAULT_IDENTITY_FIELD])) {
             $data = $object;
             $uid = $object[self::DEFAULT_IDENTITY_FIELD];
             unset($data[self::DEFAULT_IDENTITY_FIELD]);
@@ -174,6 +174,10 @@ class DataTargetDB extends AbstractComponent
             return true;
         }
 
+        if(empty($object[self::DEFAULT_IDENTITY_FIELD]))
+        {
+            unset($object[self::DEFAULT_IDENTITY_FIELD]);
+        }
 
         try {
             $this->connection->insert(

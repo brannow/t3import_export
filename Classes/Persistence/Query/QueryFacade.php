@@ -8,6 +8,8 @@
 
 namespace CPSIT\T3importExport\Persistence\Query;
 
+use CPSIT\T3importExport\Service\DatabaseConnectionService;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -58,11 +60,20 @@ class QueryFacade implements QueryFacadeInterface
      */
     protected function getConcreteQueryInstance(string $type): QueryInterface
     {
-        return GeneralUtility::makeInstance(
-            array_key_exists($type, self::MAP_TYPE_CLASS)
-                ? self::MAP_TYPE_CLASS[$type]
-                : self::MAP_TYPE_CLASS[QueryInterface::TYPE_SELECT]
-        );
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $databaseConnectionService = GeneralUtility::makeInstance(DatabaseConnectionService::class);
+        $class = array_key_exists($type, self::MAP_TYPE_CLASS)
+            ? self::MAP_TYPE_CLASS[$type]
+            : self::MAP_TYPE_CLASS[QueryInterface::TYPE_SELECT];
+
+        /**
+         * Note: we must NOT use GeneralUtility::makeInstance here in order to receive a clean instance
+         * every time.
+         */
+        $instance = new $class($connectionPool, $databaseConnectionService);
+
+        return $instance;
+
     }
 
 

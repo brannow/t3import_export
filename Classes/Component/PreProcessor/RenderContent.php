@@ -26,11 +26,9 @@ use TYPO3\CMS\Frontend\ContentObject\Exception\ContentRenderingException;
 class RenderContent extends AbstractPreProcessor implements PreProcessorInterface
 {
     public function __construct(
-        ContentObjectRenderer $contentObjectRenderer = null,
-        TypoScriptService $typoScriptService = null)
+        protected ContentObjectRenderer $contentObjectRenderer,
+        protected TypoScriptService $typoScriptService)
     {
-        $this->contentObjectRenderer = $contentObjectRenderer ?? $this->getContentObjectRenderer();
-        $this->typoScriptService = $typoScriptService ?? GeneralUtility::makeInstance(TypoScriptService::class);
     }
 
     /**

@@ -47,13 +47,11 @@ class TransferTaskFactory extends AbstractFactory implements FactoryInterface
 {
     final public const MISSING_SOURCE_EXCEPTION_CODE = 1_451_206_701;
     final public const MISSING_TARGET_EXCEPTION_CODE = 1_451_052_262;
-    protected FactoryFactory $factoryFactory;
 
     public function __construct(
-        ?FactoryFactory $factoryFactory = null
+        protected FactoryFactory $factoryFactory
     )
     {
-        $this->factoryFactory = $factoryFactory ?? GeneralUtility::makeInstance(FactoryFactory::class);
     }
 
     /**

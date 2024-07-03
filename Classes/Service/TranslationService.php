@@ -43,23 +43,10 @@ class TranslationService implements DomainObjectTranslatorInterface, SingletonIn
     final public const MISSING_COLUMN_MAP_EXCEPTION_CODE = 1_641_229_990;
     final public const MISSING_COLUMN_MAP_MESSAGE = 'Missing column map for property %s';
 
-    /**
-     * @var DataMapper
-     */
-    protected DataMapper $dataMapper;
-    protected PersistenceManagerInterface $persistenceManager;
-
-    public function __construct(DataMapper $dataMapper = null, PersistenceManagerInterface $persistenceManager = null)
+    public function __construct(protected DataMapper $dataMapper,
+                                protected PersistenceManagerInterface $persistenceManager
+    )
     {
-        if ($dataMapper === null) {
-            /** @var ObjectManager $objectManager */
-            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-            /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-            $dataMapper = $objectManager->get(DataMapper::class);
-        }
-        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
-        $this->dataMapper = $dataMapper;
-        $this->persistenceManager = $persistenceManager ?? GeneralUtility::makeInstance(PersistenceManager::class);
     }
 
     /**

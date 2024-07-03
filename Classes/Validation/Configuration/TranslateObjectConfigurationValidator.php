@@ -41,20 +41,9 @@ class TranslateObjectConfigurationValidator implements ConfigurationValidatorInt
         ]
     ];
 
-    /**
-     * @var TargetClassConfigurationValidator
-     */
-    protected $targetClassConfigurationValidator;
-
-    /**
-     * @var MappingConfigurationValidator
-     */
-    protected $mappingConfigurationValidator;
-
-
     public function __construct(
-        TargetClassConfigurationValidator $targetClassConfigurationValidator = null,
-        MappingConfigurationValidator $mappingConfigurationValidator = null
+        protected TargetClassConfigurationValidator $targetClassConfigurationValidator,
+        protected MappingConfigurationValidator $mappingConfigurationValidator
     )
     {
         $this->targetClassConfigurationValidator = $targetClassConfigurationValidator ?? GeneralUtility::makeInstance(TargetClassConfigurationValidator::class);
