@@ -77,6 +77,7 @@ class InitializerFactory extends AbstractFactory implements FactoryInterface
             );
         }
 
-        return GeneralUtility::makeInstance($className);
+        // note: we want an independend instance for each component
+        return clone GeneralUtility::makeInstance($className);
     }
 }

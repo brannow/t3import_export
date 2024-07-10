@@ -66,8 +66,9 @@ class TransferTaskFactory extends AbstractFactory implements FactoryInterface
      */
     public function get(array $settings = [], $identifier = null): TransferTask
     {
+        // note: we want an independend instance for each component
         /** @var TransferTask $task */
-        $task = GeneralUtility::makeInstance(TransferTask::class);
+        $task = clone GeneralUtility::makeInstance(TransferTask::class);
         $this->assertValidSettings($settings, $identifier);
 
         $task->setIdentifier($identifier);

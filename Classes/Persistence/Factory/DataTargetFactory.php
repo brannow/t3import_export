@@ -81,8 +81,10 @@ class DataTargetFactory extends AbstractFactory implements FactoryInterface
                 );
             }
         }
+
+        // note: we want an independend instance for each component
         /** @var DataTargetInterface $target */
-        $target = GeneralUtility::makeInstance($dataTargetClass);
+        $target = clone GeneralUtility::makeInstance($dataTargetClass);
         if ($target instanceof IdentifiableInterface && isset($settings['identifier'])) {
             $target->setIdentifier($settings['identifier']);
         }
