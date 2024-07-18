@@ -2,6 +2,7 @@
 
 namespace CPSIT\T3importExport\Persistence;
 
+use CPSIT\T3importExport\Persistence\Query\QueryFacade;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\Exception\ContentRenderingException;
 use CPSIT\T3importExport\ConfigurableInterface;
@@ -126,7 +127,7 @@ class DataSourceDB implements DataSourceInterface, ConfigurableInterface, Identi
     protected function renderValues(array $queryConfiguration): array
     {
         foreach ($queryConfiguration as $key => $value) {
-            if (is_array($value)) {
+            if (is_array($value) && isset($value['_typoScriptNodeValue'])) {
                 $renderedValue = $this->renderContent([], $value);
                 if (!is_null($renderedValue)) {
                     $queryConfiguration[$key] = $renderedValue;

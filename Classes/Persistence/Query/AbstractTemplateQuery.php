@@ -132,13 +132,10 @@ abstract class AbstractTemplateQuery implements QueryInterface
     final public function setQuery(): QueryInterface
     {
         $this->buildSelect();
-
+        $this->buildJoin();
         $this->buildWhere();
-
         $this->buildGroupBy();
-
         $this->buildOrderBy();
-
         $this->buildLimit();
 
         return $this;
@@ -158,6 +155,29 @@ abstract class AbstractTemplateQuery implements QueryInterface
         }
     }
 
+    protected function buildJoin(): void
+    {
+        if (
+            empty($this->config[QueryInterface::JOIN])
+            || !is_array($this->config[QueryInterface::JOIN])
+            || empty($this->config[QueryInterface::JOIN][QueryInterface::TABLE]
+            )
+        ) {
+            return;
+        }
+
+        $fromAlias = $this->config[QueryInterface::ALIAS] ?? $this->config[QueryInterface::TABLE];
+        $joinAlias = $this->config[QueryInterface::JOIN][QueryInterface::ALIAS] ?? $this->config[QueryInterface::JOIN][QueryInterface::TABLE];
+        $joinTable = $this->config[QueryInterface::JOIN][QueryInterface::TABLE] ?? $this->config[QueryInterface::TABLE];
+        $joinCondition = $this->config[QueryInterface::JOIN][QueryInterface::JOIN_CONDITION] ?? $this->config[QueryInterface::JOIN_CONDITION][QueryInterface::TABLE];
+        $this->queryBuilder->join(
+            $fromAlias,
+            $joinTable,
+            $joinAlias,
+            $joinCondition
+        );
+
+    }
     final protected function buildGroupBy(): void
     {
         if (!empty($this->config[QueryInterface::GROUP_BY])) {

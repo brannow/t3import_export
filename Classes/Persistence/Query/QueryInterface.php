@@ -40,6 +40,7 @@ interface QueryInterface
      */
     public const FROM_ALIAS = 'fromAlias';
     public const LEFT_JOIN = 'leftJoin';
+    public const JOIN = 'join';
     public const ALIAS = 'alias';
     public const JOIN_CONDITION = 'condition';
 

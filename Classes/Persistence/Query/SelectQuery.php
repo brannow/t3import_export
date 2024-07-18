@@ -59,8 +59,9 @@ class SelectQuery extends AbstractTemplateQuery
 {
     protected function buildSelect(): QueryInterface
     {
+        $alias = $this->config[QueryInterface::ALIAS] ?? $this->config[QueryInterface::TABLE];
         $this->queryBuilder->select(...GeneralUtility::trimExplode(',', $this->config[QueryInterface::FIELDS], true))
-            ->from($this->config[QueryInterface::TABLE]);
+            ->from($this->config[QueryInterface::TABLE], $alias);
 
         return $this;
     }
