@@ -110,7 +110,8 @@ class Extension extends ExtensionConfiguration
                 'labels' => $moduleConfiguration['labels'],
                 'extensionName' => \CPSIT\T3importExport\Configuration\Extension::NAME,
                 'icon' => $moduleConfiguration['icon'],
-                'controllerActions' => $registrationClass::getControllerActions()
+                'controllerActions' => $registrationClass::getControllerActions(),
+                'inheritNavigationComponentFromMainModule' => false,
             ];
         }
         return $configuration;

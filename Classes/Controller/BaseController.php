@@ -7,6 +7,8 @@ use CPSIT\T3importExport\Domain\Factory\TransferTaskFactory;
 use CPSIT\T3importExport\Domain\Model\Dto\TaskDemand;
 use CPSIT\T3importExport\Service\DataTransferProcessor;
 use CPSIT\T3importExport\InvalidConfigurationException;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
@@ -44,7 +46,18 @@ abstract class BaseController extends ActionController
      * @var TransferSetFactory
      */
     protected $transferSetFactory;
+    protected $moduleTemplate;
+    public function __construct(
+        protected ModuleTemplateFactory $moduleTemplateFactory,
+        protected PageRenderer $pageRenderer
+    ) {}
 
+    public function initializeView()
+    {
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $this->moduleTemplate->getDocHeaderComponent()->enable();
+
+    }
     /**
      * Injects the event import processor
      *

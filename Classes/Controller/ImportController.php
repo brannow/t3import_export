@@ -54,7 +54,7 @@ class ImportController extends BaseController implements TransferControllerInter
     /**
      * Returns the settings key
      *
-     * @return mixed
+     * @return string
      */
     public function getSettingsKey()
     {
