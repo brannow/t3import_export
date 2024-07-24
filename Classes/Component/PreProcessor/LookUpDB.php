@@ -200,8 +200,7 @@ class LookUpDB extends AbstractPreProcessor implements PreProcessorInterface
 
                 if (isset($operatorConfig['value'])) {
                     //read field value from record
-                    $whereClause .= $prefix .
-                        $queryBuilder->quote($record[$operatorConfig['value']]);
+                    $whereClause .= $queryBuilder->quote($prefix . $record[$operatorConfig['value']]);
                 }
             }
 
