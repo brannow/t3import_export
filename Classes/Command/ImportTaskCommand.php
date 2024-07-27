@@ -41,10 +41,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 
 /**
  * Provides import set commands for cli and scheduler tasks
  */
+#[AsCommand(
+    name: ImportTaskCommand::DEFAULT_NAME,
+    description: ImportTaskCommand::MESSAGE_DESCRIPTION_COMMAND,
+    aliases: ImportTaskCommand::COMMAND_ALIASES
+)]
 class ImportTaskCommand extends Command implements ArgumentAwareInterface
 {
     use ConfigureTrait,
@@ -60,6 +66,7 @@ class ImportTaskCommand extends Command implements ArgumentAwareInterface
     final public const SETTINGS_KEY = ImportController::SETTINGS_KEY;
 
     final public const DEFAULT_NAME = 't3import-export:import-task';
+    final public const COMMAND_ALIASES = ['import:task'];
     final public const MESSAGE_DESCRIPTION_COMMAND = 'Performs pre-defined import task.';
     final public const MESSAGE_HELP_COMMAND = '@todo: help command';
     final public const MESSAGE_SUCCESS = 'Import task successfully processed';

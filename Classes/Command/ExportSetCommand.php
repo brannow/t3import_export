@@ -26,10 +26,17 @@ use DWenzel\T3extensionTools\Traits\Command\ArgumentAwareTrait;
 use DWenzel\T3extensionTools\Traits\Command\ConfigureTrait;
 use DWenzel\T3extensionTools\Traits\Command\InitializeTrait;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Attribute\AsCommand;
+
 /**
  * Class ExportCommandController
  * Provides export commands for cli and scheduler tasks
  */
+#[AsCommand(
+    name: ExportSetCommand::DEFAULT_NAME,
+    description: ExportSetCommand::MESSAGE_DESCRIPTION_COMMAND,
+    aliases: ExportSetCommand::COMMAND_ALIASES
+)]
 class ExportSetCommand extends Command implements ArgumentAwareInterface
 {
     use ArgumentAwareTrait,
@@ -43,7 +50,8 @@ class ExportSetCommand extends Command implements ArgumentAwareInterface
      */
     final public const SETTINGS_KEY = ExportController::SETTINGS_KEY;
 
-    final public const DEFAULT_NAME = 't3import-export:import-set';
+    final public const DEFAULT_NAME = 't3import-export:export-set';
+    final public const COMMAND_ALIASES = ['export:set'];
     final public const MESSAGE_DESCRIPTION_COMMAND = 'Performs pre-defined export set.';
     final public const MESSAGE_HELP_COMMAND = '@todo: help command';
     final public const MESSAGE_SUCCESS = 'Export set successfully processed';
