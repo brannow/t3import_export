@@ -20,6 +20,8 @@ services:
       public: true
     CPSIT\T3importExport\Component\Initializer\TruncateTables:
       public: true
+    CPSIT\T3importExport\Component\PreProcessor\GenerateFileResource:
+      public: true
     CPSIT\T3importExport\Component\PreProcessor\LookUpDB:
       public: true
     CPSIT\T3importExport\Component\PreProcessor\RenderContent:
@@ -27,6 +29,8 @@ services:
     CPSIT\T3importExport\Component\PostProcessor\TranslateObject:
       public: true
     CPSIT\T3importExport\Component\PostProcessor\SetL10nParent:
+      public: true
+    CPSIT\T3importExport\Component\PostProcessor\GenerateFileReference:
       public: true
     CPSIT\T3importExport\Persistence\DataSourceDB:
       public: true

@@ -24,6 +24,9 @@ use CPSIT\T3importExport\LoggingTrait;
 use CPSIT\T3importExport\Messaging\MessageContainer;
 use CPSIT\T3importExport\Persistence\Factory\FileReferenceFactory;
 use CPSIT\T3importExport\Resource\FileIndexRepositoryTrait;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\Index\FileIndexRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
@@ -32,6 +35,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\Exception\PropertyNotAccessibleException;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Core\Database\Connection;
 
 /**
  * Class GenerateFileReference
@@ -39,7 +43,9 @@ use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 class GenerateFileReference extends AbstractPostProcessor
     implements PostProcessorInterface, LoggingInterface
 {
-    use FileIndexRepositoryTrait, LoggingTrait;
+    use LoggingTrait;
+
+    public const TABLE_SYS_FILE_REFERENCE = 'sys_file_reference';
 
     /**
      * Error by id
@@ -51,33 +57,13 @@ class GenerateFileReference extends AbstractPostProcessor
         1_510_524_679 => ['Invalid target page', 'Given value %s for config[\'targetPage\'] could not be interpreted as integer'],
     ];
 
-    protected PersistenceManagerInterface $persistenceManager;
-
-    protected FileReferenceFactory $fileReferenceFactory;
 
     public function __construct(
-        PersistenceManagerInterface $persistenceManager = null,
-        FileReferenceFactory $fileReferenceFactory = null,
-        FileIndexRepository $fileIndexRepository = null,
-        MessageContainer $messageContainer = null)
+        protected PersistenceManagerInterface $persistenceManager,
+        protected FileReferenceFactory        $fileReferenceFactory,
+        protected FileIndexRepository         $fileIndexRepository,
+        protected MessageContainer            $messageContainer)
     {
-        if ($persistenceManager === null) {
-            /** @var PersistenceManagerInterface $persistenceManager */
-            $persistenceManager = (GeneralUtility::makeInstance(ObjectManager::class))
-                ->get(PersistenceManagerInterface::class);
-        }
-        if ($persistenceManager !== null) {
-            $this->persistenceManager = $persistenceManager;
-        }
-        $this->fileReferenceFactory = $fileReferenceFactory ?? GeneralUtility::makeInstance(
-                FileReferenceFactory::class
-            );
-        $this->fileIndexRepository = $fileIndexRepository ?? GeneralUtility::makeInstance(
-                FileIndexRepository::class
-            );
-        $this->messageContainer = $messageContainer ?? GeneralUtility::makeInstance(
-                MessageContainer::class
-            );
     }
 
     /**
@@ -91,20 +77,43 @@ class GenerateFileReference extends AbstractPostProcessor
      */
     public function process(array $configuration, &$convertedRecord, array &$record): bool
     {
-        $fieldName = $configuration['targetField'];
-        $fileId = $record[$configuration['sourceField']];
-
-        if (
-            !ObjectAccess::isPropertySettable($convertedRecord, $fieldName)
-            || !MathUtility::canBeInterpretedAsInteger($fileId)
+        if (is_object($convertedRecord)
+            && (!ObjectAccess::isPropertySettable($convertedRecord, $targetField)
+            || !MathUtility::canBeInterpretedAsInteger($fileId))
         ) {
             return false;
         }
 
+        $sourceField = $configuration['sourceField'];
+        $targetField = $configuration['targetField'];
+        $identityField = $configuration['identityField'] ?? '__identity';
+        $tableName = $configuration['tableName']?? '';
+
+
+        $fileId = $convertedRecord[$sourceField];
+        if ($fileId instanceof File) {
+            $fileId = $fileId->getUid();
+        }
         $fileId = (int)$fileId;
 
-        if (ObjectAccess::isPropertyGettable($convertedRecord, $fieldName)) {
-            $targetFieldValue = ObjectAccess::getProperty($convertedRecord, $fieldName);
+        if ($this->fileIndexRepository->findOneByUid($fileId) === false) {
+            return false;
+        }
+
+        $foreignUid = null;
+        if (isset($convertedRecord[$identityField])) {
+            $foreignUid = (int)$convertedRecord[$identityField];
+        }
+
+        if ($this->fileReferenceExists($tableName, $fileId, $foreignUid, $targetField)) {
+            return false;
+        }
+
+
+        if (
+            is_object($convertedRecord)
+            && ObjectAccess::isPropertyGettable($convertedRecord, $targetField)) {
+            $targetFieldValue = ObjectAccess::getProperty($convertedRecord, $targetField);
 
             if ($targetFieldValue instanceof FileReference) {
                 $existingFileId = $targetFieldValue->getOriginalResource()
@@ -118,15 +127,16 @@ class GenerateFileReference extends AbstractPostProcessor
                 // remove existing reference if not equal file
                 $this->persistenceManager->remove($targetFieldValue);
             }
+
+            $fileReference = $this->fileReferenceFactory->createFileReferenceObject($fileId, $configuration, $foreignUid);
+            ObjectAccess::setProperty($convertedRecord, $targetField, $fileReference);
         }
 
-        if ($this->fileIndexRepository->findOneByUid($fileId) === false) {
-            return false;
+        if (!is_object($convertedRecord)
+        ) {
+            $this->createFileReferenceRecord($configuration, $fileId, $foreignUid);
+            $convertedRecord[$targetField] = 1;
         }
-
-        $fileReference = $this->fileReferenceFactory->create($fileId, $configuration);
-
-        ObjectAccess::setProperty($convertedRecord, $fieldName, $fileReference);
 
         return true;
     }
@@ -161,5 +171,56 @@ class GenerateFileReference extends AbstractPostProcessor
         }
 
         return true;
+    }
+
+    protected function createFileReferenceRecord(array $configuration, int $fileId, int $foreignUid)
+    {
+        $row = [
+            'uid_local' => $fileId,
+            'uid_foreign' => $foreignUid,
+            'tablenames' => $configuration['tableName'] ?? '',
+            'fieldname' => $configuration['fieldName'] ?? '',
+            'pid' => $configuration['targetPage'] ?? 0,
+        ];
+        $connection = (GeneralUtility::makeInstance(ConnectionPool::class))
+            ->getConnectionForTable(self::TABLE_SYS_FILE_REFERENCE);
+        $result = $connection->insert(self::TABLE_SYS_FILE_REFERENCE, $row);
+
+    }
+    protected function fileReferenceExists(
+        string $tableName,
+        int    $localUid,
+        int    $foreignUid,
+        string $fieldName = ''
+    ): bool
+    {
+        $connection = (GeneralUtility::makeInstance(ConnectionPool::class))->getConnectionForTable(
+            self::TABLE_SYS_FILE_REFERENCE,
+        );
+        $queryBuilder = $connection->createQueryBuilder();
+        $result = $queryBuilder->count('*')
+            ->from(self::TABLE_SYS_FILE_REFERENCE)
+            ->where(
+                $queryBuilder->expr()->and(
+                    $queryBuilder->expr()->eq(
+                        'uid_foreign',
+                        $queryBuilder->createNamedParameter($foreignUid, Connection::PARAM_INT)
+                    ),
+                    $queryBuilder->expr()->eq(
+                        'uid_local',
+                        $queryBuilder->createNamedParameter($localUid, Connection::PARAM_INT)
+                    ),
+                    $queryBuilder->expr()->eq(
+                        'tablenames',
+                        $queryBuilder->createNamedParameter($tableName, Connection::PARAM_STR)
+                    ),
+                    $queryBuilder->expr()->eq(
+                        'fieldname',
+                        $queryBuilder->createNamedParameter($fieldName, Connection::PARAM_STR)
+                    )
+                )
+            )
+            ->executeQuery()->fetchOne();
+        return ($result === 1);
     }
 }

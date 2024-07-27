@@ -25,10 +25,6 @@ use TYPO3\CMS\Core\Resource\ResourceStorageInterface;
 trait ResourceStorageTrait
 {
     use StorageRepositoryTrait;
-    /**
-     * @var ResourceStorage
-     */
-    protected $resourceStorage;
 
     /**
      * Initializes the resource resourceStorage
