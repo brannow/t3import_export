@@ -24,6 +24,7 @@ use TYPO3\CMS\Core\Resource\Exception\InvalidConfigurationException;
 class ExportController extends BaseController implements TransferControllerInterface
 {
     final public const SETTINGS_KEY = 'export';
+    public const TEMPLATE_PATH = 'Export/Index';
 
     /**
      * Export task action
@@ -35,7 +36,9 @@ class ExportController extends BaseController implements TransferControllerInter
     public function exportTaskAction($identifier): ResponseInterface
     {
         $this->taskAction($identifier);
-        return $this->htmlResponse();
+        $this->moduleTemplate->setContent($this->view->render());
+
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     /**
@@ -48,7 +51,9 @@ class ExportController extends BaseController implements TransferControllerInter
     public function exportSetAction($identifier): ResponseInterface
     {
         $this->setAction($identifier);
-        return $this->htmlResponse();
+        $this->moduleTemplate->setContent($this->view->render());
+
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     /**

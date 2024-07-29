@@ -1,18 +1,19 @@
 <html data-namespace-typo3-fluid="true"
-      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-      xmlns:sv="http://typo3.org/ns/Cobweb/Svconnector/ViewHelpers">
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers">
 
-<h1>Import complete</h1>
-<div class="message">
-    <p>
-        <f:count>{result}</f:count>
-        records imported for task {task}
-    </p>
-</div>
-<f:link.action
-    class="btn btn-default"
-    action="index"
->{f:translate(key: 'button.back', default: 'back to list')}
-</f:link.action>
-
+<f:layout name="Default"/>
+<f:section name="Content">
+    <h1>Import complete</h1>
+    <div class="message">
+        <p>
+            <f:count>{result}</f:count>
+            records imported for task {task}
+        </p>
+    </div>
+    <f:link.action
+        class="btn btn-default"
+        action="index"
+    >{f:translate(key: 'button.back', default: 'back to list')}
+    </f:link.action>
+</f:section>
 </html>

@@ -1,6 +1,8 @@
-<main data-namespace-typo3-fluid="true"
+<html data-namespace-typo3-fluid="true"
       xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers">
 
+<f:layout name="Default"/>
+<f:section name="Content">
     <f:if condition="{settings.debug}">
         <f:debug>{tasks}</f:debug>
         <f:debug>{sets}</f:debug>
@@ -46,4 +48,6 @@
             </div>
         </f:else>
     </f:if>
-</main>
+
+</f:section>
+</html>

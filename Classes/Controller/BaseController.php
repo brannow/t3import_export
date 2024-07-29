@@ -52,10 +52,12 @@ abstract class BaseController extends ActionController
         protected PageRenderer $pageRenderer
     ) {}
 
-    public function initializeView()
+    public function initializeAction()
     {
+        $this->moduleTemplate = $this->request->getAttribute('moduleData');
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-        $this->moduleTemplate->getDocHeaderComponent()->enable();
+        $this->moduleTemplate->setFlashMessageQueue($this->getFlashMessageQueue());
+        $this->moduleTemplate->getDocHeaderComponent()->disable();
 
     }
     /**
@@ -115,7 +117,9 @@ abstract class BaseController extends ActionController
                 'settings' => $this->settings[$settingsKey]
             ]
         );
-        return $this->htmlResponse();
+        $this->moduleTemplate->setContent($this->view->render());
+
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     /**

@@ -1,6 +1,8 @@
-<main data-namespace-typo3-fluid="true"
+<html data-namespace-typo3-fluid="true"
       xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers">
 
+<f:layout name="Default"/>
+<f:section name="Content">
     <h1>Import complete</h1>
 
     <div class="message">
@@ -14,5 +16,5 @@
         action="index"
     >{f:translate(key: 'button.back', default: 'back to list')}
     </f:link.action>
-
-</main>
+</f:section>
+</html>
