@@ -38,7 +38,10 @@ class ExportController extends BaseController implements TransferControllerInter
         $this->taskAction($identifier);
         $this->moduleTemplate->setContent($this->view->render());
 
-        return $this->htmlResponse($this->moduleTemplate->renderContent());
+        // this fails randomly since ModuleTemplate tries to access the
+        // fe user session for flash message and a valid user seems to be missing.
+        //return $this->htmlResponse($this->moduleTemplate->renderContent());
+        return $this->htmlResponse();
     }
 
     /**
@@ -53,7 +56,10 @@ class ExportController extends BaseController implements TransferControllerInter
         $this->setAction($identifier);
         $this->moduleTemplate->setContent($this->view->render());
 
-        return $this->htmlResponse($this->moduleTemplate->renderContent());
+        // this fails randomly since ModuleTemplate tries to access the
+        // fe user session for flash message and a valid user seems to be missing.
+        //return $this->htmlResponse($this->moduleTemplate->renderContent());
+        return $this->htmlResponse();
     }
 
     /**
