@@ -160,7 +160,7 @@ abstract class BaseController extends ActionController
         $settingsKey = $this->getSettingsKey();
 
         /** @var TaskDemand $importDemand */
-        $importDemand = $this->objectManager->get(
+        $importDemand = GeneralUtility::makeInstance(
             TaskDemand::class
         );
         if (isset($this->settings[$settingsKey]['sets'][$identifier])) {

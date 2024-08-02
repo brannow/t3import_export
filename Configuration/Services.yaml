@@ -8,6 +8,8 @@ services:
         exclude: '../Classes/Persistence/Query/*'
     CPSIT\T3importExport\Domain\Factory\TransferTaskFactory:
       public: true
+    CPSIT\T3importExport\Domain\Factory\TransferSetFactory:
+      public: true
     CPSIT\T3importExport\Property\TypeConverter\PersistentObjectConverter:
         tags:
             - name: extbase.type_converter

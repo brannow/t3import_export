@@ -37,34 +37,17 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 class TransferSetFactory extends AbstractFactory
 {
 
-    protected TransferTaskFactory $transferTaskFactory;
-    protected TransferSet $transferSet;
-
     public function __construct(
-        TransferTaskFactory $transferTaskFactory = null,
-        ConfigurationManagerInterface $configurationManager = null,
-        TransferSet $transferSet = null)
+        protected TransferTaskFactory $transferTaskFactory,
+        protected ConfigurationManagerInterface $configurationManager,
+        protected TransferSet $transferSet)
     {
 
-        if (null === $transferTaskFactory) {
-            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-
-            /** @var TransferTaskFactory $transferTaskFactory */
-            $transferTaskFactory = $objectManager->get(TransferTaskFactory::class);
-        }
-
-        if (null == $configurationManager) {
-            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-            /** @var ConfigurationManager $configurationManager */
-            $configurationManager = $objectManager->get(ConfigurationManagerInterface::class);
-        }
-        $this->settings = $configurationManager->getConfiguration(
+        $extensionConfiguration = $configurationManager->getConfiguration(
             ConfigurationManager::CONFIGURATION_TYPE_FRAMEWORK,
             't3importexport'
         );
-        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
-        $this->transferTaskFactory = $transferTaskFactory;
-        $this->transferSet = $transferSet ?? GeneralUtility::makeInstance(TransferSet::class);
+        $this->settings = $extensionConfiguration['settings'] ?? [];
     }
 
     /**
