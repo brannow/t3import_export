@@ -56,7 +56,7 @@ abstract class BaseController extends ActionController
     {
         $this->moduleTemplate = $this->request->getAttribute('moduleData');
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-        $this->moduleTemplate->setFlashMessageQueue($this->getFlashMessageQueue());
+        $this->moduleTemplate->setFlashMessageQueue($this->getFlashMessageQueue('module.t3import_export'));
         $this->moduleTemplate->getDocHeaderComponent()->disable();
 
     }

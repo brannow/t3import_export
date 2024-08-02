@@ -55,6 +55,8 @@ class ImportController extends BaseController implements TransferControllerInter
         $this->setAction($identifier);
         $this->moduleTemplate->setContent($this->view->render());
 
+        // this might fail since ModuleTemplate tries to access the
+        // fe user session for flash message and a valid user seems to be missing.
         return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
