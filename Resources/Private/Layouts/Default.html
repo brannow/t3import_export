@@ -8,7 +8,11 @@
         <f:render partial="DocHeader" arguments="{docHeader:docHeader}"/>
     </f:if>
     <div class="module-body t3js-module-body">
-        <f:flashMessages queueIdentifier="{flashMessageQueueIdentifier}"/>
+        <f:comment>
+            Temporarily disabled. We do not have a frontend user session. This leads to an
+            error with flashMessages viewhelper
+            <!--<f:flashMessages queueIdentifier="{flashMessageQueueIdentifier}"/>-->
+        </f:comment>
         <f:render section="Content" arguments="{_all}" optional="true"/>
     </div>
 </div>
