@@ -22,6 +22,8 @@ services:
       public: true
     CPSIT\T3importExport\Component\Initializer\TruncateTables:
       public: true
+    CPSIT\T3importExport\Component\Initializer\UpdateTable:
+      public: true
     CPSIT\T3importExport\Component\PreProcessor\GenerateFileResource:
       public: true
     CPSIT\T3importExport\Component\PreProcessor\LookUpDB:

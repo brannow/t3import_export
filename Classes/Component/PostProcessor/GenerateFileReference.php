@@ -180,6 +180,7 @@ class GenerateFileReference extends AbstractPostProcessor
             'uid_foreign' => $foreignUid,
             'tablenames' => $configuration['tableName'] ?? '',
             'fieldname' => $configuration['fieldName'] ?? '',
+            'crop' => $configuration['crop'] ?? '',
             'pid' => $configuration['targetPage'] ?? 0,
         ];
         $connection = (GeneralUtility::makeInstance(ConnectionPool::class))

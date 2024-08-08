@@ -127,6 +127,9 @@ abstract class AbstractTemplateQuery implements QueryInterface
                 $this->config[QueryInterface::TABLE]
             )->createQueryBuilder();
         }
+
+        // Remove all TYPO3 defalt restrictions to allow full controll over typoscript
+        $this->queryBuilder->getRestrictions()->removeAll();
     }
 
     final public function setQuery(): QueryInterface

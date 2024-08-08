@@ -63,8 +63,14 @@ class UpdateTable extends AbstractInitializer implements InitializerInterface
             $quoteTypes[] = $type;
         }
 
-        $this->connectionPool->getConnectionForTable($table)
-            ->update($table, $data, $where, $quoteTypes);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
+        $queryBuilder->getRestrictions()->removeAll();
+        $queryBuilder->update($table);
+        $queryBuilder->where($where);
+        foreach ($data as $field => $value) {
+            $queryBuilder->set($field, $value);
+        }
+        $queryBuilder->executeStatement();
 
         return true;
     }
@@ -83,13 +89,13 @@ class UpdateTable extends AbstractInitializer implements InitializerInterface
             return false;
         }
 
-        if (!empty($configuration[static::KEY_WHERE])
-            && !is_array($configuration[static::KEY_WHERE])
+        if (empty($configuration[static::KEY_WHERE])
+            || !is_string($configuration[static::KEY_WHERE])
         ) {
             return false;
         }
 
-        if (!isset($configuration[static::KEY_SET_FIELDS])
+        if (empty($configuration[static::KEY_SET_FIELDS])
             || !is_array($configuration[static::KEY_SET_FIELDS])
         ) {
             return false;
