@@ -47,11 +47,10 @@ class SetL10nParent extends AbstractPostProcessor implements PostProcessorInterf
     use DatabaseTrait;
 
     public function __construct(
-        protected ConnectionPool                      $connectionPool,
-        protected DatabaseConnectionService           $connectionService,
+        protected ConnectionPool $connectionPool,
+        protected DatabaseConnectionService $connectionService,
         protected SetL10nParentConfigurationValidator $configurationValidator
-    )
-    {
+    ) {
 
     }
 
@@ -126,7 +125,10 @@ class SetL10nParent extends AbstractPostProcessor implements PostProcessorInterf
         $parentIdentityField = $configuration['parent']['identityField'];
 
         $convertedRecord['l10n_parent'] = $result[$parentIdentityField];
-        $convertedRecord['l10n_source'] = $result[$parentIdentityField];
+
+        if (!empty($configuration['setL10nSource'])) {
+            $convertedRecord['l10n_source'] = $result[$parentIdentityField];
+        }
 
         return true;
     }
