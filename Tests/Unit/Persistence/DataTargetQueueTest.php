@@ -39,7 +39,7 @@ class DataTargetQueueTest extends TestCase
     protected const VALID_CONFIGURATION = [
         DataTargetQueue::KEY_IDENTIFIER => 'import.foo'
     ];
-    public function setUp()
+    protected function setUp(): void
     {
         $this->repository = $this->getMockBuilder(QueueItemRepository::class)
             ->disableOriginalConstructor()
@@ -93,17 +93,17 @@ class DataTargetQueueTest extends TestCase
         );
     }
 
-    public function testPersistAddsNewObject(): void
+    public function testPersistAddsNewObject(): never
     {
         $this->markTestIncomplete('to be done');
     }
 
-    public function testPersistUpdatesObjectsIfAllowedByConfiguration(): void
+    public function testPersistUpdatesObjectsIfAllowedByConfiguration(): never
     {
         $this->markTestIncomplete('to be done');
     }
 
-    public function testPersistReturnsFalseIfRepositoryRejectsObject(): void
+    public function testPersistReturnsFalseIfRepositoryRejectsObject(): never
     {
         // repository throws InvalidArgumentException
         $this->markTestIncomplete('to be done');

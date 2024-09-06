@@ -2,6 +2,7 @@
 
 namespace CPSIT\T3importExport\Persistence;
 
+use CPSIT\T3importExport\Component\AbstractComponent;
 use CPSIT\T3importExport\ConfigurableInterface;
 use CPSIT\T3importExport\ConfigurableTrait;
 use CPSIT\T3importExport\DatabaseTrait;
@@ -33,19 +34,20 @@ use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
  *
  * @package CPSIT\T3importExport\Persistence
  */
-class DataTargetDB implements DataTargetInterface, ConfigurableInterface
+class DataTargetDB extends AbstractComponent
+    implements DataTargetInterface, ConfigurableInterface
 {
     use ConfigurableTrait, DatabaseTrait;
 
-    public const MISSING_CONNECTION_MESSAGE = 'Missing database connection for table "%s"';
-    public const MISSING_CONNECTION_CODE = 1646037375;
-    public const DEFAULT_IDENTITY_FIELD = '__identity';
-    public const FIELD_TABLE = 'table';
-    public const FIELD_FIELD = 'field';
-    public const FIELD_SKIP = 'skip';
-    public const FIELD_IF_EMPTY = 'ifEmpty';
-    public const FIELD_IF_NOT_EMPTY = 'ifNotEmpty';
-    public const FIELD_UNSET_KEYS = 'unsetKeys';
+    final public const MISSING_CONNECTION_MESSAGE = 'Missing database connection for table "%s"';
+    final public const MISSING_CONNECTION_CODE = 1_646_037_375;
+    final public const DEFAULT_IDENTITY_FIELD = '__identity';
+    final public const FIELD_TABLE = 'table';
+    final public const FIELD_FIELD = 'field';
+    final public const FIELD_SKIP = 'skip';
+    final public const FIELD_IF_EMPTY = 'ifEmpty';
+    final public const FIELD_IF_NOT_EMPTY = 'ifNotEmpty';
+    final public const FIELD_UNSET_KEYS = 'unsetKeys';
 
     /**
      * Tells if the configuration is valid
@@ -118,6 +120,10 @@ class DataTargetDB implements DataTargetInterface, ConfigurableInterface
         }
         $tableName = $configuration[self::FIELD_TABLE];
 
+        /**
+         * @todo We should respect the 'identifier' for additional (external) databases here
+         * (without table mapping by core connection service)
+         */
         $this->connection = $this->connectionPool->getConnectionForTable($tableName);
         if (!$this->connection instanceof Connection) {
 
@@ -138,7 +144,7 @@ class DataTargetDB implements DataTargetInterface, ConfigurableInterface
         }
 
 
-        if (isset($object[self::DEFAULT_IDENTITY_FIELD])) {
+        if (!empty($object[self::DEFAULT_IDENTITY_FIELD])) {
             $data = $object;
             $uid = $object[self::DEFAULT_IDENTITY_FIELD];
             unset($data[self::DEFAULT_IDENTITY_FIELD]);
@@ -152,13 +158,15 @@ class DataTargetDB implements DataTargetInterface, ConfigurableInterface
             } catch (\Exception $exception) {
                 $message = 'Update Exception:' . PHP_EOL;
                 $message .= 'Data:' . PHP_EOL;
-                $message .= json_encode($object);
+                $message .= json_encode($object, JSON_THROW_ON_ERROR);
+                $message .= $exception->getMessage()  . PHP_EOL;
+
                 /**
                  * Fixme: write to log instead of catch and re-throw
                  */
                 throw new PersistenceException(
                     $message,
-                    1647701464,
+                    1_647_701_464,
                     $exception
                 );
             }
@@ -166,6 +174,10 @@ class DataTargetDB implements DataTargetInterface, ConfigurableInterface
             return true;
         }
 
+        if(empty($object[self::DEFAULT_IDENTITY_FIELD]))
+        {
+            unset($object[self::DEFAULT_IDENTITY_FIELD]);
+        }
 
         try {
             $this->connection->insert(
@@ -175,11 +187,12 @@ class DataTargetDB implements DataTargetInterface, ConfigurableInterface
         } catch (\Exception $exception) {
             $message = 'Insert Exception:' . PHP_EOL;
             $message .= 'Data:' . PHP_EOL;
-            $message .= json_encode($object);
+            $message .= json_encode($object, JSON_THROW_ON_ERROR) . PHP_EOL;
+            $message .= $exception->getMessage()  . PHP_EOL;
 
             throw new PersistenceException(
                 $message,
-                1647701464,
+                1_647_701_464,
                 $exception
             );
         }

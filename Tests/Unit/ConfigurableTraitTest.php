@@ -40,13 +40,13 @@ class ConfigurableTraitTest extends TestCase
     protected $subject;
 
     /** @noinspection ReturnTypeCanBeDeclaredInspection */
-    public function setUp()
+    protected function setUp(): void
     {
         try {
             $this->subject = $this->getMockForTrait(
                 ConfigurableTrait::class
             );
-        } catch (ReflectionException $e) {
+        } catch (ReflectionException) {
             $this->markTestIncomplete('setup failed');
         }
     }
@@ -81,7 +81,7 @@ class ConfigurableTraitTest extends TestCase
 
     public function testSetConfigurationThrowsExceptionForInvalidConfiguration(): void
     {
-        $this->expectExceptionCode(1451659793);
+        $this->expectExceptionCode(1_451_659_793);
         $this->expectException(InvalidConfigurationException::class);
         $configuration = ['foo'];
 

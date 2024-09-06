@@ -1,16 +1,20 @@
-<f:layout name="Backend" />
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers">
 
-<f:section name="content">
-	<h1>Import complete</h1>
+<f:layout name="Default"/>
+<f:section name="Content">
+    <h1>Import complete</h1>
 
-	<f:flashMessages />
-	<div class="message">
-		<p><f:count>{result}</f:count> records imported for set {set}</p>
-	</div>
-	<f:link.action
-			class="btn btn-default"
-			action="index"
-			>{f:translate(key: 'button.back', default: 'back to list')}
-	</f:link.action>
-
+    <div class="message">
+        <p>
+            <f:count>{result}</f:count>
+            records imported for set {set}
+        </p>
+    </div>
+    <f:link.action
+        class="btn btn-default"
+        action="index"
+    >{f:translate(key: 'button.back', default: 'back to list')}
+    </f:link.action>
 </f:section>
+</html>

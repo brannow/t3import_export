@@ -1,11 +1,14 @@
 <?php
 namespace CPSIT\T3importExport\Controller;
 
+use Psr\Http\Message\ResponseInterface;
 use CPSIT\T3importExport\Domain\Factory\TransferSetFactory;
 use CPSIT\T3importExport\Domain\Factory\TransferTaskFactory;
 use CPSIT\T3importExport\Domain\Model\Dto\TaskDemand;
 use CPSIT\T3importExport\Service\DataTransferProcessor;
 use CPSIT\T3importExport\InvalidConfigurationException;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
@@ -35,15 +38,28 @@ abstract class BaseController extends ActionController
     protected $dataTransferProcessor;
 
     /**
-     * @var \CPSIT\T3importExport\Domain\Factory\TransferTaskFactory
+     * @var TransferTaskFactory
      */
     protected $transferTaskFactory;
 
     /**
-     * @var \CPSIT\T3importExport\Domain\Factory\TransferSetFactory
+     * @var TransferSetFactory
      */
     protected $transferSetFactory;
+    protected $moduleTemplate;
+    public function __construct(
+        protected ModuleTemplateFactory $moduleTemplateFactory,
+        protected PageRenderer $pageRenderer
+    ) {}
 
+    public function initializeAction()
+    {
+        $this->moduleTemplate = $this->request->getAttribute('moduleData');
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $this->moduleTemplate->setFlashMessageQueue($this->getFlashMessageQueue('module.t3import_export'));
+        $this->moduleTemplate->getDocHeaderComponent()->disable();
+
+    }
     /**
      * Injects the event import processor
      *
@@ -82,7 +98,7 @@ abstract class BaseController extends ActionController
      *
      * @throws InvalidConfigurationException
      */
-    public function indexAction(): void
+    public function indexAction(): ResponseInterface
     {
         $settingsKey = $this->getSettingsKey();
         $tasks = [];
@@ -101,6 +117,9 @@ abstract class BaseController extends ActionController
                 'settings' => $this->settings[$settingsKey]
             ]
         );
+        $this->moduleTemplate->setContent($this->view->render());
+
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     /**
@@ -141,7 +160,7 @@ abstract class BaseController extends ActionController
         $settingsKey = $this->getSettingsKey();
 
         /** @var TaskDemand $importDemand */
-        $importDemand = $this->objectManager->get(
+        $importDemand = GeneralUtility::makeInstance(
             TaskDemand::class
         );
         if (isset($this->settings[$settingsKey]['sets'][$identifier])) {

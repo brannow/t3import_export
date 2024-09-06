@@ -54,8 +54,8 @@ abstract class AbstractTemplateQuery implements QueryInterface
     use DatabaseTrait;
 
     public const MESSAGE_MISSING_FIELD = 'Field `%s` must not be empty';
-    public const CODE_MISSING_FIELD = 1642072670;
-
+    public const CODE_MISSING_FIELD = 1_642_072_670;
+    public const DEFAULT_DATABASE_IDENTIFIER = 'Default';
 
 
     public const DEFAULT_CONFIGURATION = [
@@ -72,10 +72,19 @@ abstract class AbstractTemplateQuery implements QueryInterface
      */
     protected array $config = [];
 
+
+    protected $databaseIdentifier = self::DEFAULT_DATABASE_IDENTIFIER;
+
     /**
      * @var QueryBuilder
      */
     protected QueryBuilder $queryBuilder;
+
+    public function withDatabaseIdentifier(string $identifier): self
+    {
+        $this->databaseIdentifier = $identifier;
+        return clone $this;
+    }
 
     /**
      * @param array $config
@@ -109,21 +118,27 @@ abstract class AbstractTemplateQuery implements QueryInterface
 
     final protected function setQueryBuilder(): void
     {
-        $this->queryBuilder = $this->connectionPool->getConnectionForTable(
-            $this->config[QueryInterface::TABLE]
-        )->createQueryBuilder();
+        if(self::DEFAULT_DATABASE_IDENTIFIER !== $this->databaseIdentifier) {
+            $connection = $this->connectionService->getDatabase($this->databaseIdentifier);
+            $this->queryBuilder = $connection->createQueryBuilder();
+
+        } else {
+            $this->queryBuilder = $this->connectionPool->getConnectionForTable(
+                $this->config[QueryInterface::TABLE]
+            )->createQueryBuilder();
+        }
+
+        // Remove all TYPO3 defalt restrictions to allow full controll over typoscript
+        $this->queryBuilder->getRestrictions()->removeAll();
     }
 
     final public function setQuery(): QueryInterface
     {
         $this->buildSelect();
-
+        $this->buildJoin();
         $this->buildWhere();
-
         $this->buildGroupBy();
-
         $this->buildOrderBy();
-
         $this->buildLimit();
 
         return $this;
@@ -143,6 +158,29 @@ abstract class AbstractTemplateQuery implements QueryInterface
         }
     }
 
+    protected function buildJoin(): void
+    {
+        if (
+            empty($this->config[QueryInterface::JOIN])
+            || !is_array($this->config[QueryInterface::JOIN])
+            || empty($this->config[QueryInterface::JOIN][QueryInterface::TABLE]
+            )
+        ) {
+            return;
+        }
+
+        $fromAlias = $this->config[QueryInterface::ALIAS] ?? $this->config[QueryInterface::TABLE];
+        $joinAlias = $this->config[QueryInterface::JOIN][QueryInterface::ALIAS] ?? $this->config[QueryInterface::JOIN][QueryInterface::TABLE];
+        $joinTable = $this->config[QueryInterface::JOIN][QueryInterface::TABLE] ?? $this->config[QueryInterface::TABLE];
+        $joinCondition = $this->config[QueryInterface::JOIN][QueryInterface::JOIN_CONDITION] ?? $this->config[QueryInterface::JOIN_CONDITION][QueryInterface::TABLE];
+        $this->queryBuilder->join(
+            $fromAlias,
+            $joinTable,
+            $joinAlias,
+            $joinCondition
+        );
+
+    }
     final protected function buildGroupBy(): void
     {
         if (!empty($this->config[QueryInterface::GROUP_BY])) {
@@ -166,7 +204,7 @@ abstract class AbstractTemplateQuery implements QueryInterface
                 [$orderField, $ascDesc] = GeneralUtility::trimExplode(' ', $orderItem, true);
                 // count == 1 means that no direction is given
                 if ($ascDesc) {
-                    $ascDesc = ((strtolower($ascDesc) === 'desc') ?
+                    $ascDesc = ((strtolower((string) $ascDesc) === 'desc') ?
                         QueryInterface::ORDER_DESCENDING :
                         QueryInterface::ORDER_ASCENDING);
                 } else {

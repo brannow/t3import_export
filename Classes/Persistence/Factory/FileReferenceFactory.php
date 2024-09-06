@@ -30,11 +30,9 @@ use TYPO3\CMS\Extbase\Domain\Model\FileReference;
  */
 class FileReferenceFactory
 {
-    protected ResourceFactory $resourceFactory;
 
-    public function __construct(ResourceFactory $resourceFactory = null)
+    public function __construct(protected ResourceFactory $resourceFactory)
     {
-        $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
     }
     /**
      * Creates a new file reference for a file
@@ -43,18 +41,26 @@ class FileReferenceFactory
      * @param array $configuration Configuration of this post processor
      * @return FileReference
      */
-    public function create($fileId, array $configuration)
+    public function createFileReferenceObject($fileId, array $configuration, $foreignUid = null)
     {
         $pageId = 0;
+        if($foreignUid === null) {
+            $foreignUid = uniqid('NEW_');
+        }
         if (isset($configuration['targetPage'])) {
             $pageId = (int)$configuration['targetPage'];
         }
+
+        $tableName = $configuration['tableName'] ?? '';
+        $fieldName = $configuration['fieldName'] ?? '';
 
         /** @var \TYPO3\CMS\Core\Resource\FileReference $coreReference */
         $coreReference = $this->resourceFactory->createFileReferenceObject(
             [
                 'uid_local' => $fileId,
-                'uid_foreign' => uniqid('NEW_'),
+                'uid_foreign' => $foreignUid,
+                'tablenames' => $tableName,
+                'fieldname' => $fieldName,
                 'uid' => uniqid('NEW_'),
                 'crop' => null,
             ]

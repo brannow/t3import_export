@@ -16,6 +16,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use Symfony\Component\Console\Attribute\AsCommand;
 
 /***************************************************************
  *  Copyright notice
@@ -35,9 +36,15 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+
 /**
  * Provides import set commands for cli and scheduler tasks
  */
+#[AsCommand(
+    name: ImportSetCommand::DEFAULT_NAME,
+    description: ImportSetCommand::MESSAGE_DESCRIPTION_COMMAND,
+    aliases: ImportSetCommand::COMMAND_ALIASES,
+)]
 class ImportSetCommand extends Command implements ArgumentAwareInterface
 {
     use ArgumentAwareTrait,
@@ -50,17 +57,18 @@ class ImportSetCommand extends Command implements ArgumentAwareInterface
      * Framework configuration.
      * This should match the key for the ImportController
      */
-    public const SETTINGS_KEY = ImportController::SETTINGS_KEY;
+    final public const SETTINGS_KEY = ImportController::SETTINGS_KEY;
 
-    public const DEFAULT_NAME = 't3import-export:import-set';
-    public const MESSAGE_DESCRIPTION_COMMAND = 'Performs pre-defined import sets.';
-    public const MESSAGE_HELP_COMMAND = '@todo: help command';
-    public const MESSAGE_SUCCESS = 'Import sets successfully processed';
-    public const MESSAGE_STARTING = 'Starting import task';
-    public const WARNING_MISSING_PARAMETER = 'Parameter %s must not be omitted';
-    public const OPTIONS = [
+    final public const DEFAULT_NAME = 't3import-export:import-set';
+    final public const COMMAND_ALIASES = ['import:set'];
+    final public const MESSAGE_DESCRIPTION_COMMAND = 'Performs pre-defined import sets.';
+    final public const MESSAGE_HELP_COMMAND = '@todo: help command';
+    final public const MESSAGE_SUCCESS = 'Import sets successfully processed';
+    final public const MESSAGE_STARTING = 'Starting import task';
+    final public const WARNING_MISSING_PARAMETER = 'Parameter %s must not be omitted';
+    final public const OPTIONS = [
     ];
-    public const ARGUMENTS = [
+    final public const ARGUMENTS = [
         SetArgument::class
     ];
 

@@ -2,6 +2,11 @@
 
 namespace CPSIT\T3importExport;
 
+use TYPO3\CMS\Core\Http\ServerRequestFactory;
+use TYPO3\CMS\Core\Site\Entity\NullSite;
+use TYPO3\CMS\Core\Site\SiteFinder;
+use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
+use TYPO3\CMS\Frontend\ContentObject\Exception\ContentRenderingException;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\NullFrontend;
 use TYPO3\CMS\Core\Context\Context;
@@ -24,16 +29,6 @@ use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
  */
 trait RenderContentTrait
 {
-    /**
-     * @var ContentObjectRenderer
-     */
-    protected $contentObjectRenderer;
-
-    /**
-     * @var TypoScriptService
-     */
-    protected $typoScriptService;
-
     /**
      * Get a ContentObjectRenderer
      */
@@ -63,7 +58,7 @@ trait RenderContentTrait
      * @param array $record Optional data array
      * @param array $configuration Plain or TypoScript array
      * @return mixed|null Returns rendered content for each valid TypoScript object or null.
-     * @throws \TYPO3\CMS\Frontend\ContentObject\Exception\ContentRenderingException
+     * @throws ContentRenderingException
      */
     public function renderContent(array $record, array $configuration)
     {
@@ -102,8 +97,9 @@ trait RenderContentTrait
          * getTypoScriptFrontendController return NULL instead of $GLOBALS['TSFE']
          */
         if (!$this->getTypoScriptFrontendController() instanceof TypoScriptFrontendController) {
+            $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+            $site = $siteFinder->getSiteByRootPageId(1);
             $fakeUri = new Uri('https://domain.org/page');
-            $site = GeneralUtility::makeInstance(Site::class, 1, 1, []);
             $siteLanguage = GeneralUtility::makeInstance(
                 SiteLanguage::class,
                 0,
@@ -111,9 +107,10 @@ trait RenderContentTrait
                 $fakeUri,
                 []
             );
-            $pageArguments = GeneralUtility::makeInstance(PageArguments::class, 1, 0, []);
+            $pageArguments = GeneralUtility::makeInstance(PageArguments::class, 1, '1', []);
             $nullFrontend = GeneralUtility::makeInstance(NullFrontend::class, 'pages');
             $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
+            $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
             try {
                 $cacheManager->registerCache($nullFrontend);
             } catch (\Exception $exception) {
@@ -127,7 +124,8 @@ trait RenderContentTrait
                 GeneralUtility::makeInstance(Context::class),
                 $site,
                 $siteLanguage,
-                $pageArguments
+                $pageArguments,
+                $frontendUser
             );
 
             $GLOBALS['TYPO3_REQUEST'] = $originalRequest;

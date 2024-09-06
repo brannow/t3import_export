@@ -5,13 +5,9 @@
 			<generator>LFEditor</generator>
 		</header>
 		<body>
-		<trans-unit id="button.export" approved="yes">
-			<source>Export</source>
-			<target>Exportieren</target>
-		</trans-unit>
-		<trans-unit id="button.import" approved="yes">
-			<source>Import</source>
-			<target>Importieren</target>
+		<trans-unit id="button.execute" approved="yes">
+			<source>Execute</source>
+			<target>Ausführen</target>
 		</trans-unit>
 		<trans-unit id="header.export" approved="yes">
 			<source>Export</source>

@@ -35,19 +35,10 @@ use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
  ***************************************************************/
 class DataTargetFactory extends AbstractFactory implements FactoryInterface
 {
-    public const DEFAULT_DATA_TARGET_CLASS = DataTargetRepository::class;
+    final public const DEFAULT_DATA_TARGET_CLASS = DataTargetRepository::class;
 
-    protected PersistenceManagerInterface $persistenceManager;
+    public function __construct(protected PersistenceManagerInterface $persistenceManager) {
 
-    public function __construct(PersistenceManagerInterface $persistenceManager = null) {
-
-        if ($persistenceManager === null) {
-            $persistenceManager = (GeneralUtility::makeInstance(ObjectManager::class))
-                ->get(PersistenceManagerInterface::class);
-        }
-        if (null !== $persistenceManager) {
-            $this->persistenceManager = $persistenceManager;
-        }
     }
     /**
      * Builds a factory object
@@ -69,14 +60,14 @@ class DataTargetFactory extends AbstractFactory implements FactoryInterface
             throw new MissingClassException(
                 'Missing target.class ' . $dataTargetClass .
                 ' in configuration for import task ' . $identifier,
-                1451043513
+                1_451_043_513
             );
         }
         if (!in_array(DataTargetInterface::class, class_implements($dataTargetClass))) {
             throw new MissingInterfaceException(
                 'Missing interface in configuration for task ' . $identifier . ' Class ' . $dataTargetClass .
                 ' does not implement required interface ' . DataTargetInterface::class . '.',
-                1451045997
+                1_451_045_997
             );
         }
         $objectClass = null;
@@ -86,17 +77,14 @@ class DataTargetFactory extends AbstractFactory implements FactoryInterface
                 throw new MissingClassException(
                     'Missing class ' . $objectClass .
                     ' in configuration for task ' . $identifier,
-                    1451043367
+                    1_451_043_367
                 );
             }
         }
+
+        // note: we want an independend instance for each component
         /** @var DataTargetInterface $target */
-        $target = GeneralUtility::makeInstance(
-            $dataTargetClass,
-            $objectClass,
-            null,
-            $this->persistenceManager
-        );
+        $target = clone GeneralUtility::makeInstance($dataTargetClass);
         if ($target instanceof IdentifiableInterface && isset($settings['identifier'])) {
             $target->setIdentifier($settings['identifier']);
         }

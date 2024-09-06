@@ -152,7 +152,7 @@ class DataSourceFactoryTest extends TestCase
      * set up
      * @noinspection ReturnTypeCanBeDeclaredInspection
      */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->subject = new DataSourceFactory();
         $this->dataSource = $this->getMockBuilder(DummySourceClass::class)
@@ -167,7 +167,7 @@ class DataSourceFactoryTest extends TestCase
      */
     public function testGetThrowsExceptionForMissingSourceClass(): void
     {
-        $this->expectExceptionCode(1451060913);
+        $this->expectExceptionCode(1_451_060_913);
         $this->expectException(MissingClassException::class);
         $identifier = 'foo';
         $settings = [
@@ -183,7 +183,7 @@ class DataSourceFactoryTest extends TestCase
      */
     public function testGetThrowsExceptionForMissingDataSourceInterface(): void
     {
-        $this->expectExceptionCode(1451061361);
+        $this->expectExceptionCode(1_451_061_361);
         $this->expectException(MissingInterfaceException::class);
         $identifier = 'foo';
         $settings = [
@@ -200,7 +200,7 @@ class DataSourceFactoryTest extends TestCase
     public function testGetThrowsExceptionForMissingConfig(): void
     {
         $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionCode(1451086595);
+        $this->expectExceptionCode(1_451_086_595);
         $identifier = 'foo';
         $dataSourceClass = DummySourceClass::class;
         $settings = [
@@ -269,7 +269,7 @@ class DataSourceFactoryTest extends TestCase
      */
     public function testGetReturnsDataSource(): void
     {
-        $sourceClass = get_class($this->dataSource);
+        $sourceClass = $this->dataSource::class;
         $identifier = 'foo';
         $settings = [
             'class' => $sourceClass,

@@ -2,6 +2,9 @@
 
 namespace CPSIT\T3importExport\Persistence;
 
+use CPSIT\T3importExport\Persistence\Query\QueryFacade;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\ContentObject\Exception\ContentRenderingException;
 use CPSIT\T3importExport\ConfigurableInterface;
 use CPSIT\T3importExport\ConfigurableTrait;
 use CPSIT\T3importExport\DatabaseTrait;
@@ -73,7 +76,7 @@ class DataSourceDB implements DataSourceInterface, ConfigurableInterface, Identi
      * @param array $configuration source query configuration
      * @return array Array of records from database or empty array
      * @throws InvalidConfigurationException
-     * @throws \TYPO3\CMS\Frontend\ContentObject\Exception\ContentRenderingException
+     * @throws ContentRenderingException
      */
     public function getRecords(array $configuration): array
     {
@@ -85,13 +88,19 @@ class DataSourceDB implements DataSourceInterface, ConfigurableInterface, Identi
         $queryConfiguration = $this->renderValues($configuration);
 
         try {
-            $query = (new SelectQuery())
-                ->withConfiguration($queryConfiguration)
+            /** @var SelectQuery $query */
+            $query = GeneralUtility::makeInstance(SelectQuery::class);
+            if($this->identifier) {
+                $query = $query->withDatabaseIdentifier($this->identifier);
+            }
+
+            /** @var \Doctrine\DBAL\Query\QueryBuilder $queryBuilder */
+            $queryBuilder = $query->withConfiguration($queryConfiguration)
                 ->setQuery()
                 ->build();
 
-            $records = $query->execute()->fetchAllAssociative();
-        } catch (Exception $exception) {
+            $records = $queryBuilder->executeQuery()->fetchAllAssociative();
+        } catch (Exception) {
             // todo: log error
         }
 
@@ -113,12 +122,12 @@ class DataSourceDB implements DataSourceInterface, ConfigurableInterface, Identi
     /**
      * @param array $queryConfiguration
      * @return array
-     * @throws \TYPO3\CMS\Frontend\ContentObject\Exception\ContentRenderingException
+     * @throws ContentRenderingException
      */
     protected function renderValues(array $queryConfiguration): array
     {
         foreach ($queryConfiguration as $key => $value) {
-            if (is_array($value)) {
+            if (is_array($value) && isset($value['_typoScriptNodeValue'])) {
                 $renderedValue = $this->renderContent([], $value);
                 if (!is_null($renderedValue)) {
                     $queryConfiguration[$key] = $renderedValue;

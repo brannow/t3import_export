@@ -6,20 +6,20 @@ Removes attributes from the record. This is useful for cleaning up e.g. import d
 
 ```
 preProcessors {
-	61 {
-		class = CPSIT\T3importExport\Component\PreProcessor\RemoveFields
-		config {
-			fields {
-				nid = true
-				node_type = true
-				keywords = true
-				title = true
-				authors = true
-				full_text_source_in_english = true
-				leading_country = true
-			}
-		}
-	}
+  61 {
+    class = CPSIT\T3importExport\Component\PreProcessor\RemoveFields
+    config {
+      fields {
+        nid = true
+        node_type = true
+        keywords = true
+        title = true
+        authors = true
+        full_text_source_in_english = true
+        leading_country = true
+      }
+    }
+  }
 }
 
 ```

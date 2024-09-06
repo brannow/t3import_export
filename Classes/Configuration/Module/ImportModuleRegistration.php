@@ -1,6 +1,7 @@
 <?php
 namespace CPSIT\T3importExport\Configuration\Module;
 
+use CPSIT\T3importExport\Controller\ImportController;
 use DWenzel\T3extensionTools\Configuration\ModuleRegistrationInterface;
 use DWenzel\T3extensionTools\Configuration\ModuleRegistrationTrait;
 use CPSIT\T3importExport\Configuration\Extension;
@@ -9,13 +10,13 @@ class ImportModuleRegistration implements ModuleRegistrationInterface
 {
     use ModuleRegistrationTrait;
 
-    public const ROUTE = 'site_ApiToken';
+    final public const ROUTE = 'site_ApiToken';
 
     static protected string $subModuleName = 'Import';
     static protected string $mainModuleName = 'system';
     static protected string $vendorExtensionName = Extension::VENDOR_NAME . '.' . Extension::NAME;
     static protected array $controllerActions = [
-        'Import' => 'index,importTask,importSet'
+        ImportController::class => 'index,importTask,importSet'
     ];
 
     static protected string $position = 'bottom';

@@ -79,7 +79,7 @@ class ConverterFactoryTest extends TestCase
      *
      * @noinspection ReturnTypeCanBeDeclaredInspection
      */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->subject = new ConverterFactory();
     }
@@ -89,14 +89,14 @@ class ConverterFactoryTest extends TestCase
         $configurationWithoutClassName = ['bar'];
 
         $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionCode(1451566686);
+        $this->expectExceptionCode(1_451_566_686);
         $this->subject->get($configurationWithoutClassName, 'fooIdentifier');
     }
 
     public function testGetThrowsInvalidConfigurationExceptionIfClassDoesNotExist(): void
     {
         $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionCode(1451566699);
+        $this->expectExceptionCode(1_451_566_699);
         $configurationWithNonExistingClass = [
             'class' => 'NonExistingClass'
         ];
@@ -111,7 +111,7 @@ class ConverterFactoryTest extends TestCase
             'class' => DummyInvalidConverter::class
         ];
         $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionCode(1451566706);
+        $this->expectExceptionCode(1_451_566_706);
         $this->subject->get(
             $configurationWithExistingClass
         );
@@ -126,7 +126,7 @@ class ConverterFactoryTest extends TestCase
         ];
         $converter = new $validClass;
         $this->assertInstanceOf(
-            get_class($converter),
+            $converter::class,
             $this->subject->get($settings, $identifier)
         );
     }

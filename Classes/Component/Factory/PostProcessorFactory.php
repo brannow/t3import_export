@@ -38,7 +38,7 @@ class PostProcessorFactory extends AbstractFactory implements FactoryInterface
      *
      * @param array $settings
      * @param string $identifier
-     * @throws \CPSIT\T3importExport\InvalidConfigurationException
+     * @throws InvalidConfigurationException
      * @return PostProcessorInterface
      */
     public function get(array $settings = [], $identifier = null): PostProcessorInterface
@@ -50,7 +50,7 @@ class PostProcessorFactory extends AbstractFactory implements FactoryInterface
         if (!isset($settings['class'])) {
             throw new InvalidConfigurationException(
                 'Missing class in post processor configuration ' . $additionalInformation,
-                1447864207
+                1_447_864_207
             );
         }
         $className = $settings['class'];
@@ -59,7 +59,7 @@ class PostProcessorFactory extends AbstractFactory implements FactoryInterface
             throw new InvalidConfigurationException(
                 'Post-processor class ' . $className . ' in configuration for' . $additionalInformation
                 . ' does not exist.',
-                1447864223
+                1_447_864_223
             );
         }
 
@@ -67,10 +67,11 @@ class PostProcessorFactory extends AbstractFactory implements FactoryInterface
             throw new InvalidConfigurationException(
                 'Post-processor class ' . $className . ' in configuration for' . $additionalInformation
                 . ' must implement PostProcessorInterface.',
-                1447864243
+                1_447_864_243
             );
         }
 
-        return GeneralUtility::makeInstance($className);
+        // note: we want an independend instance for each component
+        return clone GeneralUtility::makeInstance($className);
     }
 }

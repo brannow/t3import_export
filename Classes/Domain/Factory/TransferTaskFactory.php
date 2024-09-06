@@ -45,15 +45,13 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class TransferTaskFactory extends AbstractFactory implements FactoryInterface
 {
-    public const MISSING_SOURCE_EXCEPTION_CODE = 1451206701;
-    public const MISSING_TARGET_EXCEPTION_CODE = 1451052262;
-    protected FactoryFactory $factoryFactory;
+    final public const MISSING_SOURCE_EXCEPTION_CODE = 1_451_206_701;
+    final public const MISSING_TARGET_EXCEPTION_CODE = 1_451_052_262;
 
     public function __construct(
-        ?FactoryFactory $factoryFactory = null
+        protected FactoryFactory $factoryFactory
     )
     {
-        $this->factoryFactory = $factoryFactory ?? GeneralUtility::makeInstance(FactoryFactory::class);
     }
 
     /**
@@ -68,8 +66,9 @@ class TransferTaskFactory extends AbstractFactory implements FactoryInterface
      */
     public function get(array $settings = [], $identifier = null): TransferTask
     {
+        // note: we want an independend instance for each component
         /** @var TransferTask $task */
-        $task = GeneralUtility::makeInstance(TransferTask::class);
+        $task = clone GeneralUtility::makeInstance(TransferTask::class);
         $this->assertValidSettings($settings, $identifier);
 
         $task->setIdentifier($identifier);
@@ -129,7 +128,7 @@ class TransferTaskFactory extends AbstractFactory implements FactoryInterface
             throw new InvalidConfigurationException(
                 'Invalid configuration for import task ' . $identifier .
                 '. Target is missing or is not an array.',
-                1451052262
+                1_451_052_262
             );
         }
 
@@ -139,7 +138,7 @@ class TransferTaskFactory extends AbstractFactory implements FactoryInterface
             throw new InvalidConfigurationException(
                 'Invalid configuration for import task ' . $identifier .
                 ' Source is missing or is not an array.',
-                1451206701
+                1_451_206_701
             );
         }
     }

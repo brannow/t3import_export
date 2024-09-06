@@ -8,6 +8,7 @@ use CPSIT\T3importExport\Command\ImportTaskCommand;
 use CPSIT\T3importExport\Configuration\Module\ExportModuleRegistration;
 use CPSIT\T3importExport\Configuration\Module\ImportModuleRegistration;
 use DWenzel\T3extensionTools\Configuration\ExtensionConfiguration;
+use DWenzel\T3extensionTools\Configuration\ModuleRegistrationInterface;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -30,16 +31,16 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  ***************************************************************/
 class Extension extends ExtensionConfiguration
 {
-    public const KEY = 't3import_export';
-    public const NAME = 'T3importExport';
-    public const VENDOR_NAME = 'CPSIT';
+    final public const KEY = 't3import_export';
+    final public const NAME = 'T3importExport';
+    final public const VENDOR_NAME = 'CPSIT';
 
-    public const MODULES_TO_REGISTER = [
+    final public const MODULES_TO_REGISTER = [
         ImportModuleRegistration::class,
         ExportModuleRegistration::class
     ];
 
-    public const COMMANDS_TO_REGISTER = [
+    final public const COMMANDS_TO_REGISTER = [
         ImportSetCommand::DEFAULT_NAME => [
             'class' => ImportSetCommand::class,
         ],
@@ -48,7 +49,7 @@ class Extension extends ExtensionConfiguration
         ],
     ];
 
-    public const SVG_ICON_IDENTIFIER_JOBS = 'jobs';
+    final public const SVG_ICON_IDENTIFIER_JOBS = 'jobs';
     /**
      * SVG icons to register
      */
@@ -90,5 +91,29 @@ class Extension extends ExtensionConfiguration
             $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers']['t3importExportExport'] = \CPSIT\T3importExport\Legacy\Command\ExportCommandController::class;
         }
 
+    }
+
+    public static function getModuleConfiguration():array
+    {
+        $configuration = [];
+        foreach (self::MODULES_TO_REGISTER as $registrationClass) {
+            if(!in_array(ModuleRegistrationInterface::class, class_implements($registrationClass), true)) {
+                continue;
+            }
+            $moduleConfiguration = $registrationClass::getModuleConfiguration();
+            $configuration[$registrationClass::getSubModuleName()] = [
+                'parent' => $registrationClass::getMainModuleName(),
+                'position' => [$registrationClass::getPosition()],
+                'access' => $moduleConfiguration['access'],
+                'workspaces' => 'live',
+                'path' => '/module/' . $registrationClass::getMainModuleName() . '/' . $registrationClass::getMainModuleName() . $registrationClass::getSubModuleName(),
+                'labels' => $moduleConfiguration['labels'],
+                'extensionName' => \CPSIT\T3importExport\Configuration\Extension::NAME,
+                'icon' => $moduleConfiguration['icon'],
+                'controllerActions' => $registrationClass::getControllerActions(),
+                'inheritNavigationComponentFromMainModule' => false,
+            ];
+        }
+        return $configuration;
     }
 }

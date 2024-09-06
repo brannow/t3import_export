@@ -41,10 +41,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 
 /**
  * Provides import set commands for cli and scheduler tasks
  */
+#[AsCommand(
+    name: ImportTaskCommand::DEFAULT_NAME,
+    description: ImportTaskCommand::MESSAGE_DESCRIPTION_COMMAND,
+    aliases: ImportTaskCommand::COMMAND_ALIASES
+)]
 class ImportTaskCommand extends Command implements ArgumentAwareInterface
 {
     use ConfigureTrait,
@@ -57,15 +63,16 @@ class ImportTaskCommand extends Command implements ArgumentAwareInterface
      * Framework configuration.
      * This should match the key for the ImportController
      */
-    const SETTINGS_KEY = ImportController::SETTINGS_KEY;
+    final public const SETTINGS_KEY = ImportController::SETTINGS_KEY;
 
-    public const DEFAULT_NAME = 't3import-export:import-task';
-    public const MESSAGE_DESCRIPTION_COMMAND = 'Performs pre-defined import task.';
-    public const MESSAGE_HELP_COMMAND = '@todo: help command';
-    public const MESSAGE_SUCCESS = 'Import task successfully processed';
-    public const MESSAGE_STARTING = 'Starting import task';
-    public const WARNING_MISSING_PARAMETER = 'Parameter "%s" must not be omitted';
-    public const WARNING_MISSING_CONFIGURATION = 'No configuration found for task with identifier "%s".';
+    final public const DEFAULT_NAME = 't3import-export:import-task';
+    final public const COMMAND_ALIASES = ['import:task'];
+    final public const MESSAGE_DESCRIPTION_COMMAND = 'Performs pre-defined import task.';
+    final public const MESSAGE_HELP_COMMAND = '@todo: help command';
+    final public const MESSAGE_SUCCESS = 'Import task successfully processed';
+    final public const MESSAGE_STARTING = 'Starting import task';
+    final public const WARNING_MISSING_PARAMETER = 'Parameter "%s" must not be omitted';
+    final public const WARNING_MISSING_CONFIGURATION = 'No configuration found for task with identifier "%s".';
     protected const OPTIONS = [];
     protected const ARGUMENTS = [
         TaskArgument::class

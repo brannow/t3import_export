@@ -1,12 +1,12 @@
 <div xmlns:f="http://xsd.helmut-hummel.de/ns/TYPO3/CMS/Fluid/ViewHelpers">
+    <li>
+
     <h3>{f:if(condition: task.label, then: task.label, else: task.identifier)}</h3>
-    <f:if condition="{task.description}">
-        <f:format.html>{task.description}</f:format.html>
-    </f:if>
+    <f:if condition="{task.description}">{task.description}</f:if>
     <f:link.action
             class="btn btn-default"
             action="importTask"
-            arguments="{identifier: '{task.identifier}'}">{f:translate(key: 'button.import')}
+            arguments="{identifier: '{task.identifier}'}">{f:translate(key: 'button.execute')}
     </f:link.action>
-    <br/>
+    </li>
 </div>

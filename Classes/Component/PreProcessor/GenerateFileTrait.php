@@ -14,7 +14,7 @@ namespace CPSIT\T3importExport\Component\PreProcessor;
  *
  * The TYPO3 project - inspiring people to share!
  */
-
+use TYPO3\CMS\Core\Resource\File;
 use CPSIT\T3importExport\Factory\FilePathFactory;
 use CPSIT\T3importExport\LoggingTrait;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
@@ -35,18 +35,14 @@ trait GenerateFileTrait
      * @var array
      */
     protected static $errors = [
-        1499007587 => ['Empty configuration', 'Configuration must not be empty'],
-        1497427302 => ['Missing storage id', 'config[\'storageId\'] must be set'],
-        1497427320 => ['Missing target directory ', 'config[\'targetDirectoryPath\` must be set'],
-        1497427335 => ['Missing field name', 'config[\'fieldName\'] must be set'],
-        1497427346 => ['Invalid storage', 'Could not find storage with id %s given in $config[\'storageId\']'],
-        1497427363 => ['Missing directory', 'Directory %s given in $config[\'basePath\'] and $config[\'targetDirectory\'] does not exist.']
+        1_499_007_587 => ['Empty configuration', 'Configuration must not be empty'],
+        1_497_427_302 => ['Missing storage id', 'config[\'storageId\'] must be set'],
+        1_497_427_320 => ['Missing target directory ', 'config[\'targetDirectoryPath\` must be set'],
+        1_497_427_335 => ['Missing field name', 'config[\'sourceField\'] must be set'],
+        1_497_427_336 => ['Missing field name', 'config[\'targetField\'] must be set'],
+        1_497_427_346 => ['Invalid storage', 'Could not find storage with id %s given in $config[\'storageId\']'],
+        1_497_427_363 => ['Missing directory', 'Directory %s given in $config[\'basePath\'] and $config[\'targetDirectory\'] does not exist.']
     ];
-
-    /**
-     * @var FilePathFactory
-     */
-    protected FilePathFactory $filePathFactory;
 
     /**
      * injects the file path factory
@@ -63,7 +59,7 @@ trait GenerateFileTrait
      *
      * @param array $configuration
      * @param string $sourceFilePath
-     * @return \TYPO3\CMS\Core\Resource\File|string|null
+     * @return File|string|null
      */
     abstract public function getFile($configuration, $sourceFilePath);
 
@@ -95,11 +91,14 @@ trait GenerateFileTrait
         if (isset($configuration['separator'])) {
             $separator = $configuration['separator'];
         }
-        $filePaths = GeneralUtility::trimExplode($separator, $record[$configuration['fieldName']], true);
+        $sourceField = $configuration['sourceField'];
+        $targetField = $configuration['targetField'];
+
+        $filePaths = GeneralUtility::trimExplode($separator, $record[$sourceField], true);
 
         // Prefix all files with source path
         if (isset($configuration['sourcePath'])) {
-            $filePaths = preg_filter('/^/', $configuration['sourcePath'], $filePaths);
+            $filePaths = preg_filter('/^/', (string) $configuration['sourcePath'], $filePaths);
         }
 
         if ($configuration['multipleRows']) {
@@ -113,7 +112,7 @@ trait GenerateFileTrait
             $fieldValue = $this->getFile($configuration, $filePaths[0]);
         }
 
-        $record[$configuration['fieldName']] = $fieldValue;
+        $record[$targetField] = $fieldValue;
 
         return true;
     }
@@ -127,34 +126,38 @@ trait GenerateFileTrait
     public function isConfigurationValid(array $configuration): bool
     {
         if (empty($configuration)) {
-            $this->logError(1499007587);
+            $this->logError(1_499_007_587);
             return false;
         }
         if (!isset($configuration['targetDirectoryPath'])) {
-            $this->logError(1497427320);
+            $this->logError(1_497_427_320);
             return false;
         }
 
-        if (!isset($configuration['fieldName'])) {
-            $this->logError(1497427335);
+        if (!isset($configuration['sourceField'])) {
+            $this->logError(1_497_427_335);
+            return false;
+        }
+        if (!isset($configuration['targetField'])) {
+            $this->logError(1_497_427_336);
             return false;
         }
 
         if (!isset($configuration['storageId'])) {
-            $this->logError(1497427302);
+            $this->logError(1_497_427_302);
             return false;
         }
 
         $this->initializeStorage($configuration);
 
         if (!$this->resourceStorage instanceof ResourceStorage) {
-            $this->logError(1497427346, [$configuration['storageId']]);
+            $this->logError(1_497_427_346, [$configuration['storageId']]);
             return false;
         }
 
         if (!$this->resourceStorage->hasFolder($configuration['targetDirectoryPath'])) {
             $storageConfiguration = $this->resourceStorage->getConfiguration();
-            $this->logError(1497427363, [$storageConfiguration['basePath'] . ltrim($configuration['targetDirectoryPath'], '/\\')]);
+            $this->logError(1_497_427_363, [$storageConfiguration['basePath'] . ltrim((string) $configuration['targetDirectoryPath'], '/\\')]);
 
             return false;
         }

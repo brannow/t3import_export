@@ -26,7 +26,7 @@ class TranslateObjectConfigurationValidator implements ConfigurationValidatorInt
 {
     protected const KEY_ARGUMENTS = 'arguments';
 
-    public const VALIDATORS = [
+    final public const VALIDATORS = [
         [
             ConfigurationValidatorInterface::KEY_CLASS => IssetValidator::class,
             self::KEY_ARGUMENTS => [self::KEY_PARENT_FIELD]
@@ -41,20 +41,9 @@ class TranslateObjectConfigurationValidator implements ConfigurationValidatorInt
         ]
     ];
 
-    /**
-     * @var TargetClassConfigurationValidator
-     */
-    protected $targetClassConfigurationValidator;
-
-    /**
-     * @var MappingConfigurationValidator
-     */
-    protected $mappingConfigurationValidator;
-
-
     public function __construct(
-        TargetClassConfigurationValidator $targetClassConfigurationValidator = null,
-        MappingConfigurationValidator $mappingConfigurationValidator = null
+        protected TargetClassConfigurationValidator $targetClassConfigurationValidator,
+        protected MappingConfigurationValidator $mappingConfigurationValidator
     )
     {
         $this->targetClassConfigurationValidator = $targetClassConfigurationValidator ?? GeneralUtility::makeInstance(TargetClassConfigurationValidator::class);

@@ -49,25 +49,14 @@ class GenerateFileResource extends AbstractPreProcessor implements PreProcessorI
 {
     use FileIndexRepositoryTrait, GenerateFileTrait, ResourceTrait;
 
+    protected ResourceStorageInterface $resourceStorage;
+
     public function __construct(
-        FileIndexRepository $fileIndexRepository = null,
-        ResourceStorageInterface $resourceStorage = null,
-        FilePathFactory $filePathFactory = null,
-        MessageContainer $messageContainer = null
+        protected FileIndexRepository $fileIndexRepository,
+        protected FilePathFactory $filePathFactory,
+        protected MessageContainer $messageContainer
     )
     {
-        $this->fileIndexRepository = $fileIndexRepository ?? GeneralUtility::makeInstance(
-                FileIndexRepository::class
-            );
-        $this->resourceStorage = $resourceStorage ?? GeneralUtility::makeInstance(
-                ResourceStorage::class
-            );
-        $this->filePathFactory = $filePathFactory ?? GeneralUtility::makeInstance(
-            FilePathFactory::class
-            );
-        $this->messageContainer = $messageContainer ?? GeneralUtility::makeInstance(
-                MessageContainer::class
-            );
     }
 
     /**

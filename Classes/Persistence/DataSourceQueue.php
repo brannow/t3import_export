@@ -34,16 +34,14 @@ class DataSourceQueue implements DataSourceInterface, ConfigurableInterface
 {
     use ConfigurableTrait;
 
-    public const KEY_IDENTIFIER = 'identifier';
-    public const KEY_BATCH_SIZE = 'batchSize';
-    public const DEFAULT_BATCH_SIZE = 10;
+    final public const KEY_IDENTIFIER = 'identifier';
+    final public const KEY_BATCH_SIZE = 'batchSize';
+    final public const DEFAULT_BATCH_SIZE = 10;
     protected string $targetClass = QueueItem::class;
 
-    protected QueueItemRepository $repository;
 
-    public function __construct(QueueItemRepository $repository = null)
+    public function __construct(protected QueueItemRepository $repository)
     {
-        $this->repository = $repository ?? (GeneralUtility::makeInstance(QueueItemRepository::class));
     }
 
     public function isConfigurationValid(array $configuration): bool

@@ -20,6 +20,7 @@ namespace CPSIT\T3importExport\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use CPSIT\T3importExport\Component\AbstractComponent;
 use CPSIT\T3importExport\Component\Converter\AbstractConverter;
 use CPSIT\T3importExport\Component\Finisher\FinisherInterface;
 use CPSIT\T3importExport\Component\Initializer\InitializerInterface;
@@ -130,6 +131,12 @@ class DataTransferProcessor
                     $this->preProcessSingle($record, $task, $result);
                     $convertedRecord = $this->convertSingle($record, $task, $result);
                     $this->postProcessSingle($convertedRecord, $record, $task, $result);
+                    if (
+                        $target instanceof AbstractComponent
+                        && $target->isDisabled($targetConfig, $record, $result)
+                    ) {
+                        continue;
+                    }
                     $target->persist($convertedRecord, $targetConfig);
                     $result->add($convertedRecord);
                 }
@@ -233,7 +240,7 @@ class DataTransferProcessor
      * @param TransferTask $task
      * @param TaskResult $result
      */
-    protected function postProcessSingle(&$convertedRecord, &$record, TransferTask $task, TaskResult $result)
+    protected function postProcessSingle(mixed &$convertedRecord, &$record, TransferTask $task, TaskResult $result)
     {
         $postProcessors = $task->getPostProcessors();
         foreach ($postProcessors as $postProcessor) {

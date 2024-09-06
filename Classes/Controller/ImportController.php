@@ -1,7 +1,9 @@
 <?php
 namespace CPSIT\T3importExport\Controller;
 
+use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Resource\Exception\InvalidConfigurationException;
+use TYPO3\CMS\Backend\Attribute\AsController;
 
 /***************************************************************
  *  Copyright notice
@@ -20,10 +22,12 @@ use TYPO3\CMS\Core\Resource\Exception\InvalidConfigurationException;
  *  GNU General Public License for more details.
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
+#[AsController]
 class ImportController extends BaseController implements TransferControllerInterface
 {
-    const SETTINGS_KEY = 'import';
-
+    final public const SETTINGS_KEY = 'import';
+    public const TEMPLATE_PATH = 'Import/Index';
     /**
      * Import task action
      *
@@ -31,9 +35,15 @@ class ImportController extends BaseController implements TransferControllerInter
      *
      * @throws InvalidConfigurationException
      */
-    public function importTaskAction($identifier)
+    public function importTaskAction($identifier): ResponseInterface
     {
         $this->taskAction($identifier);
+        $this->moduleTemplate->setContent($this->view->render());
+
+        // this fails randomly since ModuleTemplate tries to access the
+        // fe user session for flash message and a valid user seems to be missing.
+        //return $this->htmlResponse($this->moduleTemplate->renderContent());
+        return $this->htmlResponse();
     }
 
     /**
@@ -43,15 +53,21 @@ class ImportController extends BaseController implements TransferControllerInter
      *
      * @throws InvalidConfigurationException
      */
-    public function importSetAction($identifier)
+    public function importSetAction($identifier): ResponseInterface
     {
         $this->setAction($identifier);
+        $this->moduleTemplate->setContent($this->view->render());
+
+        // this fails randomly since ModuleTemplate tries to access the
+        // fe user session for flash message and a valid user seems to be missing.
+        //return $this->htmlResponse($this->moduleTemplate->renderContent());
+        return $this->htmlResponse();
     }
 
     /**
      * Returns the settings key
      *
-     * @return mixed
+     * @return string
      */
     public function getSettingsKey()
     {

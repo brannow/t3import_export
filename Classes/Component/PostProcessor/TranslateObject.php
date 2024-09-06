@@ -39,22 +39,12 @@ use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 class TranslateObject extends AbstractPostProcessor implements PostProcessorInterface
 {
 
-    protected TranslationService $translationService;
-    protected PersistenceManagerInterface $persistenceManager;
-    protected TranslateObjectConfigurationValidator $configurationValidator;
-
     public function __construct(
-        PersistenceManagerInterface $persistenceManager = null,
-        TranslationService $translationService = null,
-        TranslateObjectConfigurationValidator $translateObjectConfigurationValidator = null
+        protected PersistenceManagerInterface $persistenceManager,
+        protected TranslationService $translationService,
+        protected TranslateObjectConfigurationValidator $configurationValidator
     )
     {
-        if (null === $persistenceManager) {
-            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-            $this->persistenceManager = $objectManager->get(PersistenceManagerInterface::class);
-        }
-        $this->translationService = $translationService ?? GeneralUtility::makeInstance(TranslationService::class);
-        $this->configurationValidator = $translateObjectConfigurationValidator ?? GeneralUtility::makeInstance(TranslateObjectConfigurationValidator::class);
     }
 
     /**
@@ -81,7 +71,7 @@ class TranslateObject extends AbstractPostProcessor implements PostProcessorInte
      */
     public function process(array $configuration, &$convertedRecord, array &$record): bool
     {
-        $targetType = get_class($convertedRecord);
+        $targetType = $convertedRecord::class;
 
         if (!isset($record[$configuration['parentField']])) {
             return false;

@@ -1,8 +1,57 @@
 services:
-  _defaults:
-    autowire: true
-    autoconfigure: true
-    public: false
-
-  CPSIT\T3importExport\:
-    resource: '../Classes/*'
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+    CPSIT\T3importExport\:
+        resource: '../Classes/*'
+        exclude: '../Classes/Persistence/Query/*'
+    CPSIT\T3importExport\Domain\Factory\TransferTaskFactory:
+      public: true
+    CPSIT\T3importExport\Domain\Factory\TransferSetFactory:
+      public: true
+    CPSIT\T3importExport\Property\TypeConverter\PersistentObjectConverter:
+        tags:
+            - name: extbase.type_converter
+              priority: 2
+              target: object
+              sources: array,string,int
+    CPSIT\T3importExport\Persistence\Factory\DataTargetFactory:
+      public: true
+    CPSIT\T3importExport\Persistence\Factory\FileReferenceFactory:
+      public: true
+    CPSIT\T3importExport\Component\Initializer\TruncateTables:
+      public: true
+    CPSIT\T3importExport\Component\Initializer\UpdateTable:
+      public: true
+    CPSIT\T3importExport\Component\PreProcessor\GenerateFileResource:
+      public: true
+    CPSIT\T3importExport\Component\PreProcessor\LookUpDB:
+      public: true
+    CPSIT\T3importExport\Component\PreProcessor\RenderContent:
+      public: true
+    CPSIT\T3importExport\Component\PostProcessor\TranslateObject:
+      public: true
+    CPSIT\T3importExport\Component\PostProcessor\SetL10nParent:
+      public: true
+    CPSIT\T3importExport\Component\PostProcessor\GenerateFileReference:
+      public: true
+    CPSIT\T3importExport\Persistence\DataSourceDB:
+      public: true
+    CPSIT\T3importExport\Persistence\DataSourceCSV:
+      arguments:
+        $configurationValidator: '@CPSIT\T3importExport\Validation\Configuration\ResourcePathConfigurationValidator'
+    CPSIT\T3importExport\Persistence\DataSourceQueue:
+      public: true
+    CPSIT\T3importExport\Persistence\DataTargetQueue:
+      public: true
+    CPSIT\T3importExport\Persistence\DataTargetDB:
+      public: true
+    CPSIT\T3importExport\Persistence\Query\SelectJoinQuery:
+      public: true
+    CPSIT\T3importExport\Persistence\Query\SelectQuery:
+      public: true
+    CPSIT\T3importExport\Service\TranslationService:
+      public: true
+    CPSIT\T3importExport\Validation\Configuration\TranslateObjectConfigurationValidator:
+      public: true

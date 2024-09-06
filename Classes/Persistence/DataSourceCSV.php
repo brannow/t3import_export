@@ -33,15 +33,12 @@ class DataSourceCSV implements DataSourceInterface, ConfigurableInterface
 
     protected static $characterProperties = ['delimiter', 'enclosure', 'escape'];
 
-    protected ConfigurationValidatorInterface $configurationValidator;
-
     /**
      * DataSourceCSV constructor.
      * @param ConfigurationValidatorInterface|null $configurationValidator
      */
-    public function __construct(ConfigurationValidatorInterface $configurationValidator = null)
+    public function __construct(protected ConfigurationValidatorInterface $configurationValidator)
     {
-        $this->configurationValidator = $configurationValidator ?? GeneralUtility::makeInstance(ResourcePathConfigurationValidator::class);
     }
 
 
@@ -89,7 +86,7 @@ class DataSourceCSV implements DataSourceInterface, ConfigurableInterface
     {
         $records = [];
 
-        $resource = rtrim($this->loadResource($configuration));
+        $resource = rtrim((string) $this->loadResource($configuration));
 
         if (!empty($resource)) {
             $delimiter = null;
@@ -108,9 +105,7 @@ class DataSourceCSV implements DataSourceInterface, ConfigurableInterface
 
             $rows = array_filter(str_getcsv($resource, "\n"));
 
-            $records = array_map(function ($d) use ($delimiter, $enclosure, $escape) {
-                return str_getcsv($d, $delimiter, $enclosure, $escape);
-            }, $rows);
+            $records = array_map(fn($d) => str_getcsv($d, $delimiter, $enclosure, $escape), $rows);
 
             $headers = $records[0];
             if (isset($configuration['fields'])) {
